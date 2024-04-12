@@ -13,3 +13,11 @@ config_version=5
 config/name="Lander"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "blue",
+"res://deprecated/": "gray",
+"res://src/": "yellow"
+}
