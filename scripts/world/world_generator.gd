@@ -1,5 +1,7 @@
 extends Node3D
 
+const CUBE = preload("res://scenes/world/world_resource/Cube.tscn")
+
 signal world_generated(world: WorldSettings)
 
 # Settings del mundo
@@ -38,3 +40,12 @@ func _ready() -> void:
 func set_world_point(x: int, y: int, solid: bool) -> void:
 	world_settings.astar_grid.set_point_solid(Vector2i(x,y),solid)
 	world_settings.world_changed.emit(world_settings)
+
+func build_world_point(x: int, y:int) -> void:
+	var cube = CUBE.instantiate()
+	add_child(cube)
+	cube.global_position = Vector3(x,world_settings.floor_height,y)
+
+func _on_main_camera_builded(build_position):
+	set_world_point(build_position.x, build_position.z, true)
+	build_world_point(build_position.x, build_position.z)

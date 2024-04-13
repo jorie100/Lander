@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WorldSettings" load_steps=2 format=3 uid="uid://ddudlf3cmo7wh"]
+
+[ext_resource type="Script" path="res://scripts/world/world_settings.gd" id="1_uaevp"]
+
+[resource]
+script = ExtResource("1_uaevp")
+width = 16
+height = 16
+floor_height = 0
+spawn_size = 18
