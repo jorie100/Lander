@@ -72,5 +72,6 @@ func update_size(updated_width, updated_height):
 		child.queue_free()
 	update = true
 
+
 func _on_world_generator_world_generated(world):
 	update_size(world.width,world.height)
