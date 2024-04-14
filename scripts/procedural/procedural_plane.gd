@@ -53,7 +53,7 @@ func gen_mesh():
 	a_mesh.surface_set_material(0, material)  # Material para la segunda cara
 	self.mesh = a_mesh
 	
-	# Crear collision y asignar la propiedad "floor"
+	# Crear collision
 	self.create_trimesh_collision()
 
 func _process(_delta):
@@ -63,6 +63,15 @@ func _process(_delta):
 			child.queue_free()
 		gen_mesh()
 		update = false
+	
+	# Cambiar las capas de colisiones a la asignada para "floor"
+	if self.get_child_count() > 0:
+		if "collision_layer" in self.get_child(0):
+			if self.get_child(0).collision_layer != 1:
+				self.get_child(0).collision_layer = 1
+		if "collision_mask" in self.get_child(0):
+			if self.get_child(0).collision_mask != 0:
+				self.get_child(0).collision_mask = 0
 
 # Funcion para cambiar el tamaño del piso, borrar colisiones previas y generar mesh y colisiones de nuevo
 func update_size(updated_width, updated_height):
@@ -71,7 +80,6 @@ func update_size(updated_width, updated_height):
 	for child in get_children():
 		child.queue_free()
 	update = true
-
 
 func _on_world_generator_world_generated(world):
 	update_size(world.width,world.height)

@@ -37,6 +37,9 @@ func _ready() -> void:
 	
 	world_generated.emit(world_settings)
 
+func is_world_point_solid(x: int, y: int) -> bool:
+	return world_settings.astar_grid.is_point_solid(Vector2i(x, y))
+
 func set_world_point(x: int, y: int, solid: bool) -> void:
 	world_settings.astar_grid.set_point_solid(Vector2i(x,y),solid)
 	world_settings.world_changed.emit(world_settings)
@@ -47,5 +50,12 @@ func build_world_point(x: int, y:int) -> void:
 	cube.global_position = Vector3(x,world_settings.floor_height,y)
 
 func _on_main_camera_builded(build_position):
-	set_world_point(build_position.x, build_position.z, true)
-	build_world_point(build_position.x, build_position.z)
+	if not is_world_point_solid(build_position.x, build_position.z):
+		set_world_point(build_position.x, build_position.z, true)
+		build_world_point(build_position.x, build_position.z)
+		print("builded!")
+
+func _on_main_camera_destroyed(destroy_position):
+	if is_world_point_solid(destroy_position.x, destroy_position.z):
+		set_world_point(destroy_position.x, destroy_position.z, false)
+		print("destroyed!")

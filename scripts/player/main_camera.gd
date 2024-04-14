@@ -1,19 +1,52 @@
 extends Camera3D
 
 signal builded(build_position: Vector3)
+signal destroyed(destroy_position: Vector3)
+
+# Speed of the camera movement
+var speed = 10.0
 
 func _input(event) -> void:
-	var raycast_result = raycast_from_camera(-1)
-	var mouse_3d_position = raycast_result.get("position")
 	
-	if Input.is_action_pressed("build") and mouse_3d_position:
-		var mouse_position_fixed = mouse_3d_position
-		if mouse_position_fixed.x < 0:
-			mouse_position_fixed.x += -1
-		if mouse_position_fixed.z < 0:
-			mouse_position_fixed.z += -1
-		builded.emit(mouse_position_fixed)
+	if Input.is_action_just_pressed("build"):
+		var raycast_result = raycast_from_camera(-1)
+		if raycast_result.get("collider").collision_layer == 1:
+			var mouse_3d_position = raycast_result.get("position")
+			if mouse_3d_position.x < 0:
+				mouse_3d_position.x += -1
+			if mouse_3d_position.z < 0:
+				mouse_3d_position.z += -1
+			builded.emit(mouse_3d_position)
+	
+	if Input.is_action_just_pressed("destroy"):
+		var raycast_result = raycast_from_camera(-1)
+		if raycast_result.get("collider").collision_layer == 4:
+			raycast_result.get("collider").queue_free()
+			var mouse_3d_position = raycast_result.get("position")
+			if mouse_3d_position.x < 0:
+				mouse_3d_position.x += -1
+			if mouse_3d_position.z < 0:
+				mouse_3d_position.z += -1
+			destroyed.emit(mouse_3d_position)
 
+func _process(delta):
+	var velocity = Vector3()
+	
+	if Input.is_action_pressed('up'):
+		velocity += Vector3(0, 1, 0)
+	if Input.is_action_pressed('down'):
+		velocity += Vector3(0, -1, 0)
+	if Input.is_action_pressed('left'):
+		velocity += Vector3(-1, 0, 0)
+	if Input.is_action_pressed('right'):
+		velocity += Vector3(1, 0, 0)
+
+	# Normalize the velocity to ensure consistent speed in all directions
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed
+
+	# Apply the velocity
+	self.translate(velocity * delta)
 
 # Raycast desde la camara distancia 100. Acepta capa collision mask
 # Si capa collider_mask = -1, activa todas las capas
