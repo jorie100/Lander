@@ -9,3 +9,7 @@ shader_parameter/line_width = 0.04
 shader_parameter/grid_size = 1.0
 shader_parameter/line_color = Color(1, 1, 1, 1)
 shader_parameter/fill_color = Color(0, 0, 0, 1)
+shader_parameter/falloff_radius = 5.0
+shader_parameter/falloff_gradient = 1.0
+shader_parameter/center = null
+shader_parameter/emission_intensity = 0.0

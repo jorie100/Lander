@@ -14,7 +14,7 @@ height = 1000
 floor_height = 0
 spawn_size = 18
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_dqtvd"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_4omr4"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "format": 34359742471,
@@ -27,7 +27,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128)
 }]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_v2t5b"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_mrtm0"]
 data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
 
 [sub_resource type="QuadMesh" id="QuadMesh_i8s0v"]
@@ -51,14 +51,14 @@ shader_parameter/emission_intensity = 15.065
 world_settings = SubResource("Resource_eckp6")
 
 [node name="PlaneMesh" parent="." instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_dqtvd")
+mesh = SubResource("ArrayMesh_4omr4")
 material = ExtResource("2_rfy2p")
 
-[node name="PlaneMesh_col2" type="StaticBody3D" parent="PlaneMesh"]
+[node name="PlaneMesh_col" type="StaticBody3D" parent="PlaneMesh"]
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlaneMesh/PlaneMesh_col2"]
-shape = SubResource("ConcavePolygonShape3D_v2t5b")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlaneMesh/PlaneMesh_col"]
+shape = SubResource("ConcavePolygonShape3D_mrtm0")
 
 [node name="MainCamera" parent="." instance=ExtResource("4_gwgv0")]
 transform = Transform3D(1, 0, 0, 0, 0.14629, 0.989242, 0, -0.989242, 0.14629, 0, 11.064, 0)
