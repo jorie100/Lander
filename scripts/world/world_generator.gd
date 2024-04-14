@@ -1,6 +1,6 @@
 extends Node3D
 
-const CUBE = preload("res://scenes/world/world_resource/Cube.tscn")
+const CUBE = preload("res://scenes/world/world_resources/Cube.tscn")
 
 signal world_generated(world: WorldSettings)
 
