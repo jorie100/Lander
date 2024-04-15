@@ -92,8 +92,8 @@ func _process(delta):
 	
 	# Camera physics interpolation to reduce physics jitter on high refresh-rate monitors
 	if Engine.get_frames_per_second() > Engine.physics_ticks_per_second:
-		mesh.global_transform.basis = mesh.global_transform.basis.slerp(current_rotation, 40 * delta)
-		mesh.global_transform.origin = mesh.global_transform.origin.lerp(self.global_transform.origin, 40 * delta)
+		mesh.global_transform.basis = mesh.global_transform.basis.slerp(current_rotation, delta)
+		mesh.global_transform.origin = mesh.global_transform.origin.lerp(self.global_transform.origin, delta)
 	else:
 		mesh.global_transform.basis = current_rotation
 		mesh.global_transform = self.global_transform

@@ -11,6 +11,8 @@ signal build_mode_toggled(build_mode_state: bool)
 # Speed of the camera movement
 var speed = 10.0
 
+var movement_dir: Vector2 = Vector2(0,0)
+var camera_position: Vector3 = Vector3.ZERO
 var build_mode: bool = false
 
 func _ready() -> void:
@@ -62,25 +64,15 @@ func _input(event) -> void:
 					player_moved.emit(mouse_3d_position)
 
 func _process(delta):
-	var velocity = Vector3()
+	if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
+		movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
+	else:
+		movement_dir = Vector2(0.0, 0.0)
+	camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
+	global_position.x = lerpf(global_position.x, camera_position.x, 11.0 * delta)
+	global_position.z = lerpf(global_position.z, camera_position.z, 11.0 * delta)
 	
-	if Input.is_action_pressed('up'):
-		velocity += Vector3(0, 1, 0)
-	if Input.is_action_pressed('down'):
-		velocity += Vector3(0, -1, 0)
-	if Input.is_action_pressed('left'):
-		velocity += Vector3(-1, 0, 0)
-	if Input.is_action_pressed('right'):
-		velocity += Vector3(1, 0, 0)
-
-	# Normalize the velocity to ensure consistent speed in all directions
-	if velocity.length() > 0:
-		velocity = velocity.normalized() * speed
-
-	# Apply the velocity
-	self.translate(velocity * delta)
-	
-	if grid:
+	if grid and build_mode:
 		grid.global_position = raycast_from_camera(1).get("position") + Vector3(0.0,0.01,0.0)
 		grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
 
