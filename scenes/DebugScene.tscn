@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dsfwb1tquup73"]
+[gd_scene load_steps=11 format=3 uid="uid://dsfwb1tquup73"]
 
 [ext_resource type="PackedScene" uid="uid://cnijw8yrtcfhf" path="res://scenes/procedural/ProceduralPlane.tscn" id="1_16ih5"]
 [ext_resource type="PackedScene" uid="uid://dsfky4jfe0wdy" path="res://scenes/world/WorldGenerator.tscn" id="1_858cd"]
@@ -9,12 +9,12 @@
 
 [sub_resource type="Resource" id="Resource_eckp6"]
 script = ExtResource("2_fuvli")
-width = 1000
-height = 1000
+width = 3500
+height = 3500
 floor_height = 0
 spawn_size = 18
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4omr4"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_gsu8j"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "format": 34359742471,
@@ -27,9 +27,6 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128)
 }]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_mrtm0"]
-data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
-
 [sub_resource type="QuadMesh" id="QuadMesh_i8s0v"]
 size = Vector2(16, 16)
 
@@ -38,10 +35,10 @@ render_priority = 0
 shader = ExtResource("6_umnnq")
 shader_parameter/line_width = 0.04
 shader_parameter/grid_size = 1.0
-shader_parameter/line_color = Color(1, 1, 1, 1)
-shader_parameter/fill_color = Color(0, 0, 0, 0)
-shader_parameter/falloff_radius = -10.8
-shader_parameter/falloff_gradient = 16.62
+shader_parameter/line_color = Color(0, 1, 0, 1)
+shader_parameter/fill_color = Color(0, 1, 0, 0.0941176)
+shader_parameter/falloff_radius = -12.4
+shader_parameter/falloff_gradient = 15.315
 shader_parameter/center = Vector3(0, 0, 0)
 shader_parameter/emission_intensity = 15.065
 
@@ -50,30 +47,24 @@ shader_parameter/emission_intensity = 15.065
 [node name="WorldGenerator" parent="." instance=ExtResource("1_858cd")]
 world_settings = SubResource("Resource_eckp6")
 
-[node name="PlaneMesh" parent="." instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_4omr4")
+[node name="Floor" parent="." instance=ExtResource("1_16ih5")]
+mesh = SubResource("ArrayMesh_gsu8j")
 material = ExtResource("2_rfy2p")
 
-[node name="PlaneMesh_col" type="StaticBody3D" parent="PlaneMesh"]
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlaneMesh/PlaneMesh_col"]
-shape = SubResource("ConcavePolygonShape3D_mrtm0")
-
-[node name="MainCamera" parent="." instance=ExtResource("4_gwgv0")]
+[node name="MainCamera" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("4_gwgv0")]
 transform = Transform3D(1, 0, 0, 0, 0.14629, 0.989242, 0, -0.989242, 0.14629, 0, 11.064, 0)
 current = true
+grid = NodePath("../Grid")
 
-[node name="Grid" type="MeshInstance3D" parent="MainCamera"]
-transform = Transform3D(1, 0, 0, 0, 0.989241, 0.14629, 0, -0.14629, 0.989241, 0, -1.61569, -10.9256)
+[node name="Grid" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -1.49012e-07, 0.999999, 0, -0.999999, -1.49012e-07, 0, 0.0673603, 0)
 mesh = SubResource("QuadMesh_i8s0v")
-skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_tpyok")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-4.37114e-08, 1, 4.23516e-22, -1.31134e-07, -5.73206e-15, 1, 1, 4.37114e-08, 1.31134e-07, 0, -1.81285, 0)
 light_energy = 0.1
 
-[connection signal="world_generated" from="WorldGenerator" to="PlaneMesh" method="_on_world_generator_world_generated"]
+[connection signal="world_generated" from="WorldGenerator" to="Floor" method="_on_world_generator_world_generated"]
 [connection signal="builded" from="MainCamera" to="WorldGenerator" method="_on_main_camera_builded"]
 [connection signal="destroyed" from="MainCamera" to="WorldGenerator" method="_on_main_camera_destroyed"]

@@ -1,7 +1,10 @@
 extends Camera3D
 
+
 signal builded(build_position: Vector3)
 signal destroyed(destroy_position: Vector3)
+
+@export var grid: MeshInstance3D
 
 # Speed of the camera movement
 var speed = 10.0
@@ -10,24 +13,26 @@ func _input(event) -> void:
 	
 	if Input.is_action_just_pressed("build"):
 		var raycast_result = raycast_from_camera(-1)
-		if raycast_result.get("collider").collision_layer == 1:
-			var mouse_3d_position = raycast_result.get("position")
-			if mouse_3d_position.x < 0:
-				mouse_3d_position.x += -1
-			if mouse_3d_position.z < 0:
-				mouse_3d_position.z += -1
-			builded.emit(mouse_3d_position)
+		if raycast_result:
+			if raycast_result.get("collider").collision_layer == 1:
+				var mouse_3d_position = raycast_result.get("position")
+				if mouse_3d_position.x < 0:
+					mouse_3d_position.x += -1
+				if mouse_3d_position.z < 0:
+					mouse_3d_position.z += -1
+				builded.emit(mouse_3d_position)
 	
 	if Input.is_action_just_pressed("destroy"):
 		var raycast_result = raycast_from_camera(-1)
-		if raycast_result.get("collider").collision_layer == 4:
-			raycast_result.get("collider").queue_free()
-			var mouse_3d_position = raycast_result.get("position")
-			if mouse_3d_position.x < 0:
-				mouse_3d_position.x += -1
-			if mouse_3d_position.z < 0:
-				mouse_3d_position.z += -1
-			destroyed.emit(mouse_3d_position)
+		if raycast_result:
+			if raycast_result.get("collider").collision_layer == 4:
+				raycast_result.get("collider").queue_free()
+				var mouse_3d_position = raycast_result.get("position")
+				if mouse_3d_position.x < 0:
+					mouse_3d_position.x += -1
+				if mouse_3d_position.z < 0:
+					mouse_3d_position.z += -1
+				destroyed.emit(mouse_3d_position)
 
 func _process(delta):
 	var velocity = Vector3()
@@ -47,6 +52,10 @@ func _process(delta):
 
 	# Apply the velocity
 	self.translate(velocity * delta)
+	
+	if grid:
+		grid.global_position = raycast_from_camera(1).get("position") + Vector3(0.0,0.01,0.0)
+		grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
 
 # Raycast desde la camara distancia 100. Acepta capa collision mask
 # Si capa collider_mask = -1, activa todas las capas
