@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://0n25bdi0ds4f"]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_7f4md"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qo2gy"]
+size = Vector3(0.706604, 1, 0.712036)
+
+[sub_resource type="BoxMesh" id="BoxMesh_c3xwa"]
+size = Vector3(0.7, 1, 0.7)
+
+[sub_resource type="Gradient" id="Gradient_xbeh6"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_80x0f"]
+gradient = SubResource("Gradient_xbeh6")
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("target", "mesh")]
+script = ExtResource("1_7f4md")
+target = NodePath("Target")
+mesh = NodePath("MeshInstance3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00814819, 0.5, 6.10352e-05)
+shape = SubResource("BoxShape3D_qo2gy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_c3xwa")
+
+[node name="Target" type="Marker3D" parent="."]
+top_level = true
+
+[node name="Decal" type="Decal" parent="Target"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0045166, 0.0150299, -0.00323486)
+size = Vector3(0.44751, 0.199249, 0.40271)
+texture_emission = SubResource("GradientTexture1D_80x0f")
+emission_energy = 128.0

@@ -1,38 +1,65 @@
 extends Camera3D
 
-
 signal builded(build_position: Vector3)
 signal destroyed(destroy_position: Vector3)
+
+signal player_moved(target_position: Vector3)
+signal build_mode_toggled(build_mode_state: bool)
 
 @export var grid: MeshInstance3D
 
 # Speed of the camera movement
 var speed = 10.0
 
+var build_mode: bool = false
+
+func _ready() -> void:
+	if grid:
+		grid.visible = build_mode
+
 func _input(event) -> void:
 	
-	if Input.is_action_just_pressed("build"):
-		var raycast_result = raycast_from_camera(-1)
-		if raycast_result:
-			if raycast_result.get("collider").collision_layer == 1:
-				var mouse_3d_position = raycast_result.get("position")
-				if mouse_3d_position.x < 0:
-					mouse_3d_position.x += -1
-				if mouse_3d_position.z < 0:
-					mouse_3d_position.z += -1
-				builded.emit(mouse_3d_position)
+	if Input.is_action_just_pressed("toggle_build_mode"):
+		build_mode = not build_mode
+		build_mode_toggled.emit(build_mode)
+		if grid:
+			grid.visible = build_mode
+		
 	
-	if Input.is_action_just_pressed("destroy"):
-		var raycast_result = raycast_from_camera(-1)
-		if raycast_result:
-			if raycast_result.get("collider").collision_layer == 4:
-				raycast_result.get("collider").queue_free()
-				var mouse_3d_position = raycast_result.get("position")
-				if mouse_3d_position.x < 0:
-					mouse_3d_position.x += -1
-				if mouse_3d_position.z < 0:
-					mouse_3d_position.z += -1
-				destroyed.emit(mouse_3d_position)
+	if build_mode:
+		if Input.is_action_just_pressed("build"):
+			var raycast_result = raycast_from_camera(-1)
+			if raycast_result:
+				if raycast_result.get("collider").collision_layer == 1:
+					var mouse_3d_position = raycast_result.get("position")
+					if mouse_3d_position.x < 0:
+						mouse_3d_position.x += -1
+					if mouse_3d_position.z < 0:
+						mouse_3d_position.z += -1
+					builded.emit(mouse_3d_position)
+		
+		if Input.is_action_just_pressed("destroy"):
+			var raycast_result = raycast_from_camera(-1)
+			if raycast_result:
+				if raycast_result.get("collider").collision_layer == 4:
+					raycast_result.get("collider").queue_free()
+					var mouse_3d_position = raycast_result.get("position")
+					if mouse_3d_position.x < 0:
+						mouse_3d_position.x += -1
+					if mouse_3d_position.z < 0:
+						mouse_3d_position.z += -1
+					destroyed.emit(mouse_3d_position)
+	else:
+		if Input.is_action_just_pressed("move_player"):
+			var raycast_result = raycast_from_camera(-1)
+			if raycast_result:
+				if raycast_result.get("collider").collision_layer == 1:
+					var mouse_3d_position = raycast_result.get("position")
+					if mouse_3d_position.x < 0:
+						mouse_3d_position.x += -1
+					if mouse_3d_position.z < 0:
+						mouse_3d_position.z += -1
+					player_moved.emit(mouse_3d_position)
 
 func _process(delta):
 	var velocity = Vector3()
