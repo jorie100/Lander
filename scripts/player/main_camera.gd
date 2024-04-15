@@ -71,7 +71,7 @@ func _process(delta):
 		camera_zoom += 100 * delta * (camera_zoom/20)
 	if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
 		camera_zoom -= 100 * delta * (camera_zoom/20)
-	size = lerpf(size, camera_zoom, 10 * delta)
+	size = lerpf(size, camera_zoom, 8 * delta)
 	
 	if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
 		movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")

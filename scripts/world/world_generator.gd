@@ -53,9 +53,7 @@ func _on_main_camera_builded(build_position):
 	if not is_world_point_solid(build_position.x, build_position.z):
 		set_world_point(build_position.x, build_position.z, true)
 		build_world_point(build_position.x, build_position.z)
-		print("builded!")
 
 func _on_main_camera_destroyed(destroy_position):
 	if is_world_point_solid(destroy_position.x, destroy_position.z):
 		set_world_point(destroy_position.x, destroy_position.z, false)
-		print("destroyed!")

@@ -28,7 +28,6 @@ func _physics_process(delta):
 	# Actualizar mesh instance con la posicion y rotacion del robot (con rotacion suave)
 	current_rotation = current_rotation.slerp(self.global_transform.basis, rotation_speed * delta)
 	
-	
 	# Revisa si hay puntos para hacer pathfinding
 	if current_id_path.is_empty():
 		
@@ -94,7 +93,6 @@ func _process(delta):
 
 # Obtener el camino en el AStarGrid2D
 func obtain_id_path(objective_position: Vector2i) -> Array[Vector2i]:
-	
 	var id_path
 	
 	if is_moving:
@@ -116,21 +114,9 @@ func path_distance(path_array):
 		path_total_distance += Vector2(path_array[i]).distance_to(Vector2(path_array[i + 1]))
 	return path_total_distance
 
-# Recibir astar y altura del mundo
-func _on_world_gen_astar(astar, world_floor_height):
-	astar_grid = astar
-	floor_height = world_floor_height
-
-# Recibir click de la camara para moverse al piso
-func _on_main_camera_move_to_floor(clicked_position):
+func calculate_path_to_target(target_path_position: Vector3) -> void:
+	var id_path = obtain_id_path(Vector2i(int(target_path_position.x),int(target_path_position.z)))
 	
-	if clicked_position.x < 0:
-		clicked_position.x += -1
-	if clicked_position.z < 0:
-		clicked_position.z += -1
-	
-	var id_path = obtain_id_path(Vector2i(clicked_position.x,clicked_position.z))
-
 	if not id_path.is_empty():
 		static_objective = null
 		
@@ -143,9 +129,8 @@ func _on_main_camera_move_to_floor(clicked_position):
 		else:
 			speed_multiplier = 0.5
 
-
 ## Recibir el click de la camara para moverse al static_target
-#func _on_main_camera_move_to_static_target(clicked_position, static_target):
+#func _on_main_camera_move_to_static_target(clicked_position: Vector3, static_target):
 	#
 	#if clicked_position.x < 0:
 		#clicked_position.x += -1
@@ -160,7 +145,6 @@ func _on_main_camera_move_to_floor(clicked_position):
 		#point_array = static_target.building.point_array
 	#else:
 		#return
-	#
 	#
 	#var neighbour_array: Array = []
 	#
@@ -218,18 +202,13 @@ func _on_world_generator_world_generated(world: WorldSettings):
 func _on_world_changed(world: WorldSettings):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
+	
+	var fixed_target_position = target.global_position
+	if fixed_target_position.x < 0:
+		fixed_target_position.x += -1
+	if fixed_target_position.z < 0:
+		fixed_target_position.z += -1
+	calculate_path_to_target(fixed_target_position)
 
 func _on_main_camera_player_moved(target_move_position):
-	var id_path = obtain_id_path(Vector2i(target_move_position.x,target_move_position.z))
-	
-	if not id_path.is_empty():
-		static_objective = null
-		
-		current_id_path = id_path
-		
-		target.visible = true
-		
-		if is_moving:
-			speed_multiplier = 1
-		else:
-			speed_multiplier = 0.5
+	calculate_path_to_target(target_move_position)
