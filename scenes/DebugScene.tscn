@@ -15,7 +15,7 @@ floor_height = 0
 spawn_size = 18
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5qcv2"]
-albedo_color = Color(0.45098, 0.25098, 0.482353, 1)
+albedo_color = Color(0.12549, 0.12549, 0.12549, 1)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_nj6ai"]
 _surfaces = [{
