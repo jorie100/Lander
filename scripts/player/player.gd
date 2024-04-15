@@ -89,14 +89,8 @@ func _physics_process(delta):
 				is_moving = false
 
 func _process(delta):
-	
-	# Camera physics interpolation to reduce physics jitter on high refresh-rate monitors
-	if Engine.get_frames_per_second() > Engine.physics_ticks_per_second:
-		mesh.global_transform.basis = mesh.global_transform.basis.slerp(current_rotation, delta)
-		mesh.global_transform.origin = mesh.global_transform.origin.lerp(self.global_transform.origin, delta)
-	else:
-		mesh.global_transform.basis = current_rotation
-		mesh.global_transform = self.global_transform
+	mesh.global_transform.basis = mesh.global_transform.basis.slerp(current_rotation, 40 * delta)
+	mesh.global_transform.origin = mesh.global_transform.origin.lerp(self.global_transform.origin, 40 * delta)
 
 # Obtener el camino en el AStarGrid2D
 func obtain_id_path(objective_position: Vector2i) -> Array[Vector2i]:
@@ -225,8 +219,8 @@ func _on_world_changed(world: WorldSettings):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
 
-func _on_main_camera_player_moved(target_position):
-	var id_path = obtain_id_path(Vector2i(target_position.x,target_position.z))
+func _on_main_camera_player_moved(target_move_position):
+	var id_path = obtain_id_path(Vector2i(target_move_position.x,target_move_position.z))
 	
 	if not id_path.is_empty():
 		static_objective = null

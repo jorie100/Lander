@@ -18,7 +18,7 @@ spawn_size = 18
 specular_mode = 2
 albedo_color = Color(0.12549, 0.12549, 0.12549, 1)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_batpc"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_y4bph"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "format": 34359742471,
@@ -31,7 +31,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128)
 }]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_e1veb"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_3rmom"]
 data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
 
 [sub_resource type="QuadMesh" id="QuadMesh_i8s0v"]
@@ -55,14 +55,14 @@ shader_parameter/emission_intensity = 15.065
 world_settings = SubResource("Resource_eckp6")
 
 [node name="Floor" parent="." instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_batpc")
+mesh = SubResource("ArrayMesh_y4bph")
 material = SubResource("StandardMaterial3D_5qcv2")
 
-[node name="Floor_col" type="StaticBody3D" parent="Floor"]
+[node name="Floor_col2" type="StaticBody3D" parent="Floor"]
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/Floor_col"]
-shape = SubResource("ConcavePolygonShape3D_e1veb")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/Floor_col2"]
+shape = SubResource("ConcavePolygonShape3D_3rmom")
 
 [node name="MainCamera" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("4_gwgv0")]
 transform = Transform3D(1, 0, 0, 0, 0.4439, 0.896076, 0, -0.896076, 0.4439, 0, 11.064, 0)

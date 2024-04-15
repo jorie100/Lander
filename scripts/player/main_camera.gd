@@ -19,7 +19,7 @@ func _ready() -> void:
 	if grid:
 		grid.visible = build_mode
 
-func _input(event) -> void:
+func _input(_event) -> void:
 	
 	if Input.is_action_just_pressed("toggle_build_mode"):
 		build_mode = not build_mode
@@ -29,7 +29,7 @@ func _input(event) -> void:
 		
 	
 	if build_mode:
-		if Input.is_action_just_pressed("build"):
+		if Input.is_action_pressed("build"):
 			var raycast_result = raycast_from_camera(-1)
 			if raycast_result:
 				if raycast_result.get("collider").collision_layer == 1:
