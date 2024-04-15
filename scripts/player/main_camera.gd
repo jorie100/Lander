@@ -12,10 +12,13 @@ signal build_mode_toggled(build_mode_state: bool)
 var speed = 10.0
 
 var movement_dir: Vector2 = Vector2(0,0)
-var camera_position: Vector3 = Vector3.ZERO
+var camera_position: Vector3
+var camera_zoom: float
 var build_mode: bool = false
 
 func _ready() -> void:
+	camera_position = self.global_position
+	camera_zoom = self.size
 	if grid:
 		grid.visible = build_mode
 
@@ -64,23 +67,31 @@ func _input(_event) -> void:
 					player_moved.emit(mouse_3d_position)
 
 func _process(delta):
+	if Input.is_action_just_released("cam_zoom_down") and camera_zoom < 50:
+		camera_zoom += 100 * delta * (camera_zoom/20)
+	if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
+		camera_zoom -= 100 * delta * (camera_zoom/20)
+	size = lerpf(size, camera_zoom, 10 * delta)
+	
 	if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
 		movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
+		camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
 	else:
 		movement_dir = Vector2(0.0, 0.0)
-	camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
 	global_position.x = lerpf(global_position.x, camera_position.x, 11.0 * delta)
 	global_position.z = lerpf(global_position.z, camera_position.z, 11.0 * delta)
 	
 	if grid and build_mode:
-		grid.global_position = raycast_from_camera(1).get("position") + Vector3(0.0,0.01,0.0)
-		grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
+		var grid_raycast = raycast_from_camera(1)
+		if grid_raycast:
+			grid.global_position = grid_raycast.get("position") + Vector3(0.0,0.01,0.0)
+			grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
 
 # Raycast desde la camara distancia 100. Acepta capa collision mask
 # Si capa collider_mask = -1, activa todas las capas
 func raycast_from_camera(collider_mask) -> Dictionary:
 	var mouse_pos = get_viewport().get_mouse_position()
-	var ray_length = 100
+	var ray_length = 4000
 	var from = project_ray_origin(mouse_pos)
 	var to = from + project_ray_normal(mouse_pos) * ray_length
 	var space = get_world_3d().direct_space_state
