@@ -1,9 +1,8 @@
-[gd_scene load_steps=14 format=3 uid="uid://dsfwb1tquup73"]
+[gd_scene load_steps=13 format=3 uid="uid://dsfwb1tquup73"]
 
 [ext_resource type="PackedScene" uid="uid://cnijw8yrtcfhf" path="res://scenes/procedural/ProceduralPlane.tscn" id="1_16ih5"]
 [ext_resource type="PackedScene" uid="uid://dsfky4jfe0wdy" path="res://scenes/world/WorldGenerator.tscn" id="1_858cd"]
 [ext_resource type="Script" path="res://scripts/world/world_settings.gd" id="2_fuvli"]
-[ext_resource type="Material" uid="uid://bwvwtr6vftt3u" path="res://assets/materials/prototype_materials/dark_floor.tres" id="2_rfy2p"]
 [ext_resource type="PackedScene" uid="uid://xq7h4o4vqbxv" path="res://scenes/player/MainCamera.tscn" id="4_gwgv0"]
 [ext_resource type="Shader" path="res://scripts/shaders/grid.gdshader" id="6_umnnq"]
 [ext_resource type="PackedScene" uid="uid://0n25bdi0ds4f" path="res://scenes/player/Player.tscn" id="7_1qfo7"]
@@ -15,23 +14,23 @@ height = 3500
 floor_height = 0
 spawn_size = 18
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_y3at2"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5qcv2"]
+albedo_color = Color(0.45098, 0.25098, 0.482353, 1)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nj6ai"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "format": 34359742471,
 "index_count": 6,
 "index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 2, 0, 3, 0),
-"material": ExtResource("2_rfy2p"),
+"material": SubResource("StandardMaterial3D_5qcv2"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128)
 }]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5qcv2"]
-albedo_color = Color(0.203922, 0.203922, 0.203922, 1)
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_1hkrl"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_tkc0p"]
 data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
 
 [sub_resource type="QuadMesh" id="QuadMesh_i8s0v"]
@@ -55,14 +54,14 @@ shader_parameter/emission_intensity = 15.065
 world_settings = SubResource("Resource_eckp6")
 
 [node name="Floor" parent="." instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_y3at2")
+mesh = SubResource("ArrayMesh_nj6ai")
 material = SubResource("StandardMaterial3D_5qcv2")
 
 [node name="Floor_col" type="StaticBody3D" parent="Floor"]
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/Floor_col"]
-shape = SubResource("ConcavePolygonShape3D_1hkrl")
+shape = SubResource("ConcavePolygonShape3D_tkc0p")
 
 [node name="MainCamera" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("4_gwgv0")]
 transform = Transform3D(1, 0, 0, 0, 0.14629, 0.989242, 0, -0.989242, 0.14629, 0, 11.064, 0)
