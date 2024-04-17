@@ -6,10 +6,11 @@ signal destroyed(destroy_position: Vector3)
 signal player_moved(target_position: Vector3)
 signal build_mode_toggled(build_mode_state: bool)
 
-@export var grid: MeshInstance3D
-
 # Speed of the camera movement
-var speed = 10.0
+@export var speed = 15.0
+
+# Nodes
+@export var grid: MeshInstance3D
 
 var movement_dir: Vector2 = Vector2(0,0)
 var camera_position: Vector3
@@ -71,15 +72,15 @@ func _process(delta):
 		camera_zoom += 100 * delta * (camera_zoom/20)
 	if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
 		camera_zoom -= 100 * delta * (camera_zoom/20)
-	size = lerpf(size, camera_zoom, 8 * delta)
+	size = lerpf(size, camera_zoom, 8.0 * delta)
 	
 	if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
 		movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
 		camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
 	else:
 		movement_dir = Vector2(0.0, 0.0)
-	global_position.x = lerpf(global_position.x, camera_position.x, 11.0 * delta)
-	global_position.z = lerpf(global_position.z, camera_position.z, 11.0 * delta)
+	global_position.x = lerpf(global_position.x, camera_position.x, 12.0 * delta)
+	global_position.z = lerpf(global_position.z, camera_position.z, 12.0 * delta)
 	
 	if grid and build_mode:
 		var grid_raycast = raycast_from_camera(1)
