@@ -1,7 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://xq7h4o4vqbxv"]
+[gd_scene load_steps=9 format=3 uid="uid://xq7h4o4vqbxv"]
 
 [ext_resource type="Script" path="res://scripts/player/main_camera.gd" id="1_trxw6"]
+[ext_resource type="Resource" uid="uid://bhcgswwbqnfss" path="res://scripts/world/structures/cube.tres" id="2_cmyrm"]
 [ext_resource type="Shader" path="res://scripts/shaders/grid.gdshader" id="2_hqe7n"]
+[ext_resource type="Resource" uid="uid://cg1yrouauwjxm" path="res://scripts/world/structures/lshape.tres" id="3_r3im5"]
+[ext_resource type="Resource" uid="uid://dfpcj34od57vc" path="res://scripts/world/structures/default.tres" id="4_2rcqe"]
+[ext_resource type="Resource" uid="uid://bth4ruo3rwjhm" path="res://scripts/world/structures/muralla.tres" id="5_jnr7h"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_cnw12"]
 size = Vector2(16, 16)
@@ -9,22 +13,23 @@ size = Vector2(16, 16)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yh23o"]
 render_priority = 0
 shader = ExtResource("2_hqe7n")
-shader_parameter/line_width = 0.04
+shader_parameter/line_width = 0.03
 shader_parameter/grid_size = 1.0
-shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/line_color = Color(0, 1, 0, 1)
 shader_parameter/fill_color = Color(0, 1, 0, 0)
 shader_parameter/falloff_radius = -12.4
-shader_parameter/falloff_gradient = 15.315
+shader_parameter/falloff_gradient = 17.315
 shader_parameter/center = Vector3(0, 0, 0)
 shader_parameter/emission_intensity = 15.065
 
 [node name="Camera3D" type="Camera3D" node_paths=PackedStringArray("grid")]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
 cull_mask = 1
 projection = 1
 size = 15.0
 script = ExtResource("1_trxw6")
 grid = NodePath("Grid")
+structures = Array[Resource("res://scripts/resources/structure_data.gd")]([ExtResource("2_cmyrm"), ExtResource("3_r3im5"), ExtResource("4_2rcqe"), ExtResource("5_jnr7h")])
 
 [node name="Grid" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.866024, 0.5, 0, -0.5, 0.866024, 0, 0.00540702, 0.00936523)
@@ -32,3 +37,12 @@ top_level = true
 visible = false
 mesh = SubResource("QuadMesh_cnw12")
 surface_material_override/0 = SubResource("ShaderMaterial_yh23o")
+
+[node name="Label" type="Label" parent="."]
+offset_top = 23.0
+offset_right = 40.0
+offset_bottom = 46.0
+
+[node name="Label2" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0

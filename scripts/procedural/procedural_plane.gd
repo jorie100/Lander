@@ -23,10 +23,10 @@ func gen_mesh():
 	# Nuevo mesh con vertices, normales e indices
 	var a_mesh = ArrayMesh.new()
 	var vertices := PackedVector3Array([
-		Vector3(int(-width/2.0),0,int(-height/2.0)),
-		Vector3(int(width/2.0),0,int(-height/2.0)),
-		Vector3(int(width/2.0),0,int(height/2.0)),
-		Vector3(int(-width/2.0),0,int(height/2.0)),
+		Vector3(ceil(-width / 2.0), 0, ceil(-height / 2.0)),
+		Vector3(ceil(width / 2.0), 0, ceil(-height / 2.0)),
+		Vector3(ceil(width / 2.0), 0, ceil(height / 2.0)),
+		Vector3(ceil(-width / 2.0), 0, ceil(height / 2.0))
 	])
 	
 	var normals := PackedVector3Array([
@@ -80,6 +80,10 @@ func update_size(updated_width, updated_height):
 	for child in get_children():
 		child.queue_free()
 	update = true
+	# var new_material = StandardMaterial3D.new()
+	# new_material.albedo_color = Color8(randi_range(0,180),randi_range(0,50),randi_range(0,180),1)
+	# self.set_surface_override_material(0, new_material)
 
-func _on_world_generator_world_generated(world):
+func _on_world_generator_world_generated(world: WorldData):
 	update_size(world.width,world.height)
+	self.global_position.y = world.floor_height

@@ -1,10 +1,19 @@
-[gd_resource type="Resource" script_class="WorldSettings" load_steps=2 format=3 uid="uid://ddudlf3cmo7wh"]
+[gd_resource type="Resource" script_class="WorldSettings" load_steps=3 format=3 uid="uid://ddudlf3cmo7wh"]
 
-[ext_resource type="Script" path="res://scripts/world/world_settings.gd" id="1_uaevp"]
+[ext_resource type="Script" path="res://scripts/resources/world_settings.gd" id="1_uaevp"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gldua"]
+noise_type = 4
+fractal_octaves = 1
 
 [resource]
 script = ExtResource("1_uaevp")
-width = 16
-height = 16
+width = 128
+height = 128
 floor_height = 0
-spawn_size = 18
+spawn_radius = 8
+structure_spawn_rate = 0.15
+world_noise = SubResource("FastNoiseLite_gldua")
+noise_scale = 85
+noise_threshold = 0.2
+noise_spawn_radius = 50

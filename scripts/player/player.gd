@@ -42,7 +42,7 @@ func _physics_process(delta):
 		if !is_moving:
 			target_position = Vector3(
 				current_id_path.front().x + grid_offset,
-				self.global_position.y,
+				floor_height+0.5,
 				current_id_path.front().y + grid_offset
 			)
 			is_moving = true
@@ -68,7 +68,7 @@ func _physics_process(delta):
 		# Mover el target visual al final del recorrido (posicion clickada)
 		var id_path_end = Vector3(
 			current_id_path.back().x + grid_offset,
-			0,
+			floor_height,
 			current_id_path.back().y + grid_offset
 		)
 		target.global_position = id_path_end
@@ -81,7 +81,7 @@ func _physics_process(delta):
 			if !current_id_path.is_empty():
 				target_position = Vector3(
 					current_id_path.front().x + grid_offset,
-					self.global_position.y,
+					floor_height+0.5,
 					current_id_path.front().y + grid_offset
 				)
 			else:
@@ -129,77 +129,12 @@ func calculate_path_to_target(target_path_position: Vector3) -> void:
 		else:
 			speed_multiplier = 0.5
 
-## Recibir el click de la camara para moverse al static_target
-#func _on_main_camera_move_to_static_target(clicked_position: Vector3, static_target):
-	#
-	#if clicked_position.x < 0:
-		#clicked_position.x += -1
-	#if clicked_position.z < 0:
-		#clicked_position.z += -1
-	#
-	#var point_array = []
-	## Revisar si static_target tiene point_array para calcular cercano
-	#if "world_resource" in static_target:
-		#point_array = static_target.world_resource.point_array
-	#elif "building" in static_target:
-		#point_array = static_target.building.point_array
-	#else:
-		#return
-	#
-	#var neighbour_array: Array = []
-	#
-	## Revisar la distancia entre el Robot y cada posible punto alcanzable del static_target
-	#for static_point in point_array:
-		#var global_static_point = static_point + Vector2(int(static_target.global_position.x),int(static_target.global_position.z))
-		#
-		#var rango = 1  # Define el rango a tu alrededor
-		#
-		#for i in range(-rango, rango + 1):
-			#for j in range(-rango, rango + 1):
-				#var neighbour = Vector2(global_static_point.x + i, global_static_point.y + j)
-				#if neighbour != global_static_point and !astar_grid.is_point_solid(neighbour) and neighbour not in neighbour_array:
-					#neighbour_array.append(neighbour)
-#
-	## Si es alcanzable entonces hace pathfind hasta el punto mas cercano (target point), sino no hace nada
-	#if not neighbour_array.is_empty():
-		#
-		#var id_path: Array = []
-		#var path_size: float = 0.0
-		#
-		#for neighbour in neighbour_array:
-			#var neighbour_path: Array = obtain_id_path(neighbour)
-			#var distance = path_distance(neighbour_path)
-			#if not neighbour_path.is_empty():
-				#if distance == 0.0:
-					#id_path = neighbour_path
-					#path_size = 0.0
-					#break
-				#elif path_size == 0.0:
-					#id_path = neighbour_path
-					#path_size = distance
-				#elif path_size > distance:
-					#path_size = distance
-					#id_path = neighbour_path
-		#
-		#if not id_path.is_empty():
-			#static_objective = static_target
-			#
-			#current_id_path = id_path
-			#
-			#target.visible = true
-			#
-			#if is_moving:
-				#speed_multiplier = 1
-			#else:
-				#speed_multiplier = 0.5
-
-
-func _on_world_generator_world_generated(world: WorldSettings):
+func _on_world_generator_world_generated(world: WorldData):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
 	world.world_changed.connect(_on_world_changed)
 
-func _on_world_changed(world: WorldSettings):
+func _on_world_changed(world: WorldData):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
 	
@@ -212,3 +147,55 @@ func _on_world_changed(world: WorldSettings):
 
 func _on_main_camera_player_moved(target_move_position):
 	calculate_path_to_target(target_move_position)
+
+func _on_world_generator_structure_clicked(structure: StructureData):
+	var point_array = []
+	# Revisar si static_target tiene point_array para calcular cercano
+	point_array = structure.structure_shape
+	
+	var neighbour_array: Array = []
+	
+	# Revisar la distancia entre el Robot y cada posible punto alcanzable del static_target
+	for static_point in point_array:
+		var global_static_point = Vector2(static_point)
+		
+		var rango = 1  # Define el rango a tu alrededor
+		
+		for i in range(-rango, rango + 1):
+			for j in range(-rango, rango + 1):
+				var neighbour = Vector2(global_static_point.x + i, global_static_point.y + j)
+				if neighbour != global_static_point and !astar_grid.is_point_solid(neighbour) and neighbour not in neighbour_array:
+					neighbour_array.append(neighbour)
+
+	# Si es alcanzable entonces hace pathfind hasta el punto mas cercano (target point), sino no hace nada
+	if not neighbour_array.is_empty():
+		
+		var id_path: Array = []
+		var path_size: float = 0.0
+		
+		for neighbour in neighbour_array:
+			var neighbour_path: Array = obtain_id_path(neighbour)
+			var distance = path_distance(neighbour_path)
+			if not neighbour_path.is_empty():
+				if distance == 0.0:
+					id_path = neighbour_path
+					path_size = 0.0
+					break
+				elif path_size == 0.0:
+					id_path = neighbour_path
+					path_size = distance
+				elif path_size > distance:
+					path_size = distance
+					id_path = neighbour_path
+		
+		if not id_path.is_empty():
+			static_objective = structure
+			
+			current_id_path = id_path
+			
+			target.visible = true
+			
+			if is_moving:
+				speed_multiplier = 1
+			else:
+				speed_multiplier = 0.5

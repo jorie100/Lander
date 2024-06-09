@@ -1,20 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://dsfwb1tquup73"]
+[gd_scene load_steps=17 format=3 uid="uid://dsfwb1tquup73"]
 
 [ext_resource type="PackedScene" uid="uid://cnijw8yrtcfhf" path="res://scenes/procedural/ProceduralPlane.tscn" id="1_16ih5"]
 [ext_resource type="PackedScene" uid="uid://dsfky4jfe0wdy" path="res://scenes/world/WorldGenerator.tscn" id="1_858cd"]
-[ext_resource type="Script" path="res://scripts/world/world_settings.gd" id="2_fuvli"]
+[ext_resource type="Resource" uid="uid://ddudlf3cmo7wh" path="res://scripts/world/world_settings/default.tres" id="2_4qcrx"]
+[ext_resource type="Resource" uid="uid://bhcgswwbqnfss" path="res://scripts/world/structures/cube.tres" id="3_srluh"]
 [ext_resource type="PackedScene" uid="uid://xq7h4o4vqbxv" path="res://scenes/player/MainCamera.tscn" id="4_gwgv0"]
 [ext_resource type="Material" uid="uid://bwvwtr6vftt3u" path="res://assets/materials/prototype_materials/dark_floor.tres" id="4_ip3fi"]
+[ext_resource type="Script" path="res://scripts/world/preview_container.gd" id="4_pfnmy"]
+[ext_resource type="Material" uid="uid://cqlp7kufgqtba" path="res://assets/materials/structures/preview_buildable.tres" id="5_xxv2k"]
+[ext_resource type="Material" uid="uid://bopvtyrfl120p" path="res://assets/materials/structures/preview_not_buildable.tres" id="6_bchxv"]
 [ext_resource type="PackedScene" uid="uid://0n25bdi0ds4f" path="res://scenes/player/Player.tscn" id="7_1qfo7"]
+[ext_resource type="Shader" path="res://scripts/shaders/procedural_material.gdshader" id="9_ifo6v"]
+[ext_resource type="Texture2D" uid="uid://d0fdhfm55f6x0" path="res://assets/materials/prototype_materials/textures/dark/texture_11.png" id="10_vhpkl"]
 
-[sub_resource type="Resource" id="Resource_eckp6"]
-script = ExtResource("2_fuvli")
-width = 512
-height = 512
-floor_height = 0
-spawn_size = 18
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_yt2sm"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_78yug"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "format": 34359742471,
@@ -24,29 +23,84 @@ _surfaces = [{
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128, 255, 127, 255, 255, 0, 0, 0, 128)
+"vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191)
 }]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1po11"]
+render_priority = 0
+shader = ExtResource("9_ifo6v")
+shader_parameter/scale = 20.0
+shader_parameter/seed = Vector2(0, 0)
+shader_parameter/factor = 0.0
+shader_parameter/tiles_tex = ExtResource("10_vhpkl")
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_68ygn"]
+data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
+
+[sub_resource type="Environment" id="Environment_r7bvf"]
+ambient_light_source = 2
+ambient_light_color = Color(0.835395, 0.644011, 0.697849, 1)
+reflected_light_source = 1
 
 [node name="DebugScene" type="Node"]
 
-[node name="WorldGenerator" parent="." instance=ExtResource("1_858cd")]
-world_settings = SubResource("Resource_eckp6")
+[node name="WorldGenerator" parent="." node_paths=PackedStringArray("preview_container", "structures_container") instance=ExtResource("1_858cd")]
+world_settings = ExtResource("2_4qcrx")
+preview_container = NodePath("PreviewContainer")
+structures_container = NodePath("StructuresContainer")
+current_structure = ExtResource("3_srluh")
+
+[node name="World" type="Node" parent="WorldGenerator"]
+
+[node name="PreviewContainer" type="Node3D" parent="WorldGenerator"]
+script = ExtResource("4_pfnmy")
+buildable_material = ExtResource("5_xxv2k")
+not_buildable_material = ExtResource("6_bchxv")
+
+[node name="StructuresContainer" type="Node" parent="WorldGenerator"]
 
 [node name="Floor" parent="." instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_yt2sm")
+mesh = SubResource("ArrayMesh_78yug")
+surface_material_override/0 = SubResource("ShaderMaterial_1po11")
 material = ExtResource("4_ip3fi")
+
+[node name="Floor_col" type="StaticBody3D" parent="Floor"]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/Floor_col"]
+shape = SubResource("ConcavePolygonShape3D_68ygn")
 
 [node name="MainCamera" parent="." instance=ExtResource("4_gwgv0")]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 90, 52.0788)
 current = true
+far = 120.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-4.37114e-08, 1, 4.23516e-22, -1.31134e-07, -5.73206e-15, 1, 1, 4.37114e-08, 1.31134e-07, 0, -1.81285, 0)
+transform = Transform3D(0.221592, 0.138579, 0.965242, -0.348161, -0.913366, 0.211059, 0.910868, -0.382829, -0.154147, 0, 6.22908, 0)
+shadow_enabled = true
+shadow_opacity = 0.8
+directional_shadow_split_1 = 0.8
+directional_shadow_split_2 = 0.85
+directional_shadow_split_3 = 0.9
+directional_shadow_fade_start = 1.0
 
 [node name="Player" parent="." instance=ExtResource("7_1qfo7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_r7bvf")
+
+[connection signal="built_checked" from="WorldGenerator" to="WorldGenerator/PreviewContainer" method="_on_world_generator_built_checked"]
+[connection signal="built_checked" from="WorldGenerator" to="MainCamera" method="_on_world_generator_built_checked"]
+[connection signal="structure_clicked" from="WorldGenerator" to="Player" method="_on_world_generator_structure_clicked"]
+[connection signal="world_generated" from="WorldGenerator" to="WorldGenerator/PreviewContainer" method="_on_world_generator_world_generated"]
 [connection signal="world_generated" from="WorldGenerator" to="Floor" method="_on_world_generator_world_generated"]
 [connection signal="world_generated" from="WorldGenerator" to="Player" method="_on_world_generator_world_generated"]
+[connection signal="build_mode_toggled" from="MainCamera" to="WorldGenerator/PreviewContainer" method="_on_main_camera_build_mode_toggled"]
 [connection signal="builded" from="MainCamera" to="WorldGenerator" method="_on_main_camera_builded"]
+[connection signal="builded" from="MainCamera" to="WorldGenerator/PreviewContainer" method="_on_main_camera_builded"]
 [connection signal="destroyed" from="MainCamera" to="WorldGenerator" method="_on_main_camera_destroyed"]
 [connection signal="player_moved" from="MainCamera" to="Player" method="_on_main_camera_player_moved"]
+[connection signal="structure_changed" from="MainCamera" to="WorldGenerator" method="_on_main_camera_structure_changed"]
+[connection signal="structure_changed" from="MainCamera" to="WorldGenerator/PreviewContainer" method="_on_main_camera_structure_changed"]
+[connection signal="structure_clicked" from="MainCamera" to="WorldGenerator" method="_on_main_camera_structure_clicked"]
