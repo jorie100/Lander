@@ -43,11 +43,19 @@ func gen_mesh():
 		]
 	)
 	
+	var uvs := PackedVector2Array([
+		Vector2(0, 0),
+		Vector2(1, 0),
+		Vector2(1, 1),
+		Vector2(0, 1)
+	])
+
 	# Crear y agregar la primera cara
 	var array = []
 	array.resize(Mesh.ARRAY_MAX)
 	array[Mesh.ARRAY_VERTEX] = vertices
 	array[Mesh.ARRAY_INDEX] = indices
+	array[Mesh.ARRAY_TEX_UV] = uvs
 	array[Mesh.ARRAY_NORMAL] = normals
 	a_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array)
 	a_mesh.surface_set_material(0, material)  # Material para la segunda cara
@@ -64,14 +72,14 @@ func _process(_delta):
 		gen_mesh()
 		update = false
 	
-	# Cambiar las capas de colisiones a la asignada para "floor"
-	if self.get_child_count() > 0:
-		if "collision_layer" in self.get_child(0):
-			if self.get_child(0).collision_layer != 1:
-				self.get_child(0).collision_layer = 1
-		if "collision_mask" in self.get_child(0):
-			if self.get_child(0).collision_mask != 0:
-				self.get_child(0).collision_mask = 0
+		# Cambiar las capas de colisiones a la asignada para "floor"
+		if self.get_child_count() > 0:
+			if "collision_layer" in self.get_child(0):
+				if self.get_child(0).collision_layer != 1:
+					self.get_child(0).collision_layer = 1
+			if "collision_mask" in self.get_child(0):
+				if self.get_child(0).collision_mask != 0:
+					self.get_child(0).collision_mask = 0
 
 # Funcion para cambiar el tamaño del piso, borrar colisiones previas y generar mesh y colisiones de nuevo
 func update_size(updated_width, updated_height):
