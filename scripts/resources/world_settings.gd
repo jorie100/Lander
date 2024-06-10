@@ -13,6 +13,10 @@ class_name WorldSettings
 @export var noise_threshold: float = 0.2: set = set_noise_threshold
 @export var noise_spawn_radius: int = 50: set = set_noise_spawn_radius
 
+@export_category("GenerationSettings")
+@export var generate_mountains: bool = true: set = set_generate_mountains
+@export var generate_structures: bool = true: set = set_generate_structures
+
 func set_width(value: int) -> void:
 	width = value
 
@@ -55,3 +59,9 @@ func set_noise_spawn_radius(value: int):
 		#for y in height:
 			#world_points[x][y] = 0
 	#world.world_points = world_points
+
+func set_generate_mountains(value: bool):
+	generate_mountains = value
+
+func set_generate_structures(value: bool):
+	generate_structures = value

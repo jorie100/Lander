@@ -17,3 +17,5 @@ world_noise = SubResource("FastNoiseLite_gldua")
 noise_scale = 85
 noise_threshold = 0.2
 noise_spawn_radius = 50
+generate_mountains = true
+generate_structures = true
