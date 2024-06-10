@@ -2,7 +2,7 @@ extends Resource
 class_name StructureData
 
 @export var structure_name: String = ""  ## The name of the structure
-@export var structure_position: Vector3 = Vector3(0, 0, 0)  ## The origin position of the structure on the world grid
+@export var structure_position: Vector2i = Vector2i(0, 0)  ## The origin position of the structure on the world grid
 @export var structure_shape: Array[Vector2i] = []  ## Array to define the shape of the structure
 @export var structure_scene: PackedScene  ## The associated scene for the structure
 #@export var data: Dictionary = {}  ## Additional data specific to the structure

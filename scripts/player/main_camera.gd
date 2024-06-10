@@ -1,10 +1,12 @@
 extends Camera3D
 
-signal builded(build_position: Vector3, is_preview: bool)
-signal destroyed(destroy_position: Vector3, collided_structure: CollisionObject3D)
+signal structure_previewed(build_position: Vector3, build_structure: StructureData)
+signal structure_builded(build_position: Vector3, build_structure: StructureData)
+signal structure_destroyed(collided_structure: CollisionObject3D)
+signal structure_selected(collided_structure: CollisionObject3D)
 
-signal player_moved(target_position: Vector3)
-signal structure_clicked(collided_structure: CollisionObject3D)
+#signal player_moved(target_position: Vector3)
+#signal structure_clicked(collided_structure: CollisionObject3D)
 signal build_mode_toggled(is_building: bool, structure: StructureData)
 signal structure_changed(structure: StructureData)
 
@@ -56,15 +58,13 @@ func _input(_event) -> void:
 					mouse_3d_position.x += -1
 				if mouse_3d_position.z < 0:
 					mouse_3d_position.z += -1
-				builded.emit(mouse_3d_position, false)
+				#builded.emit(mouse_3d_position, false)
+				structure_builded.emit(mouse_3d_position, current_structure)
 		
 		if Input.is_action_just_pressed("destroy"):
 			var raycast_result_collider = raycast_from_camera(4)
 			if raycast_result_collider:
-				var mouse_3d_position = raycast_result_collider.get("collider").global_position
-				raycast_result_collider.get("collider").queue_free()
-				print(mouse_3d_position)
-				destroyed.emit(mouse_3d_position, raycast_result_collider.get("collider"))
+				structure_destroyed.emit(raycast_result_collider.get("collider"))
 	else:
 		if Input.is_action_just_pressed("move_player"):
 			var raycast_result = raycast_from_camera(-1)
@@ -75,9 +75,10 @@ func _input(_event) -> void:
 						mouse_3d_position.x += -1
 					if mouse_3d_position.z < 0:
 						mouse_3d_position.z += -1
-					player_moved.emit(mouse_3d_position)
+					#player_moved.emit(mouse_3d_position)
 				if raycast_result.get("collider").collision_layer == 4:
-					structure_clicked.emit(raycast_result.get("collider"))
+					pass
+					#structure_clicked.emit(raycast_result.get("collider"))
 
 # Utility function to rotate around the Y-axis
 #func rotate_y(angle):
@@ -108,7 +109,8 @@ func _process(delta) -> void:
 			if mouse_3d_position.z < 0:
 				mouse_3d_position.z += -1
 			if raycast_result.get("collider").collision_layer == 1:
-				builded.emit(mouse_3d_position, true)
+				pass
+				#builded.emit(mouse_3d_position, true)
 	
 	if Input.is_action_just_released("cam_zoom_down") and camera_zoom < 50:
 		camera_zoom += 100 * delta * (camera_zoom/20)
