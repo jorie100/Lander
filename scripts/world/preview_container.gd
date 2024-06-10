@@ -30,7 +30,7 @@ func _on_world_generator_built_checked(is_buildable):
 		else:
 			child.set_surface_override_material(0, not_buildable_material)
 
-func _on_main_camera_builded(build_position, is_preview):
+func _on_main_camera_builded(build_position, _is_preview):
 	build_position = Vector3i(build_position)
 	self.global_position = build_position
 	self.global_position.y = floor_height + 0.5

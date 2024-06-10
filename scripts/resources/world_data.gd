@@ -21,6 +21,7 @@ func _init(world_settings: WorldSettings):
 	set_noise_threshold(world_settings.noise_threshold)
 	set_generate_mountains(world_settings.generate_mountains)
 	set_generate_structures(world_settings.generate_structures)
+	set_world_seed(world_settings.world_seed)
 
 # Additional functions to handle interactions with structures
 func get_structure_at_position(position: Vector2) -> StructureData:

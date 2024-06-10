@@ -27,19 +27,31 @@ func _on_new_world_started(world_settings: WorldSettings):
 	new_world.astar_grid = astar_grid
 	
 	# Generar terreno
+	var world_seed = world_settings.world_seed
+	if world_seed == 0:
+		world_seed = randi()
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = world_seed
+	
 	if mountains:
-		var noise = setup_noise(world_settings.world_noise)
+		var noise = setup_noise(world_settings.world_noise, rng)
 		var noise_grid = generate_noise_grid(width, height, noise, world_settings.noise_scale)
 		new_world = generate_mountains(noise_grid, new_world)
 	if structures:
-		var rng = RandomNumberGenerator.new()
 		new_world = generate_structures(rng, new_world)
+	
+	new_world.world_seed = rng.seed
+	print("seed: ",new_world.world_seed)
 	new_world_generated.emit(new_world)
 
 # Noise
-func setup_noise(noise: FastNoiseLite):
+func setup_noise(noise: FastNoiseLite, noise_rng: RandomNumberGenerator):
 	if noise:
-		noise.seed = randi()
+		if not noise_rng:
+			noise.seed = randi()
+		else:
+			noise.seed = noise_rng.seed
 		return noise
 
 func generate_noise_grid(width, height, noise, n_scale):

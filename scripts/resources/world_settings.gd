@@ -1,21 +1,22 @@
 extends Resource
 class_name WorldSettings
 
-@export var width: int = 512: set = set_width
-@export var height: int = 512: set = set_height
-@export var floor_height: int = 0: set = set_floor_height
-@export var spawn_radius: int = 8: set = set_spawn_radius
-@export_range(0.0,100.0) var structure_spawn_rate: float = 0.15: set = set_structure_spawn_rate
-
-@export_category("NoiseSettings")
-@export var world_noise: FastNoiseLite: set = set_world_noise
-@export var noise_scale: int = 85: set = set_noise_scale
-@export var noise_threshold: float = 0.2: set = set_noise_threshold
-@export var noise_spawn_radius: int = 50: set = set_noise_spawn_radius
+@export var width: int = 512: set = set_width ## Width of the world
+@export var height: int = 512: set = set_height ## Height of the world
+@export var floor_height: int = 0: set = set_floor_height ## Height of the floor in the world
+@export var spawn_radius: int = 8: set = set_spawn_radius ## Radius for spawning entities
 
 @export_category("GenerationSettings")
-@export var generate_mountains: bool = true: set = set_generate_mountains
-@export var generate_structures: bool = true: set = set_generate_structures
+@export var world_seed: int = 0: set = set_world_seed ## World seed to generate (0 = random)
+@export var generate_structures: bool = true: set = set_generate_structures ## Flag to determine if structures should be generated
+@export_range(0.0,100.0) var structure_spawn_rate: float = 0.15: set = set_structure_spawn_rate ## Rate at which structures spawn
+@export var generate_mountains: bool = true: set = set_generate_mountains ## Flag to determine if mountains should be generated
+
+@export_category("NoiseSettings")
+@export var world_noise: FastNoiseLite: set = set_world_noise ## Noise settings for the world generation
+@export var noise_scale: int = 85: set = set_noise_scale ## Scale of the noise for world generation
+@export var noise_threshold: float = 0.2: set = set_noise_threshold ## Threshold for the noise in world generation
+@export var noise_spawn_radius: int = 50: set = set_noise_spawn_radius ## Radius for noise spawn in world generation
 
 func set_width(value: int) -> void:
 	width = value
@@ -47,21 +48,16 @@ func set_noise_threshold(value: float):
 	noise_threshold = value
 
 func set_noise_spawn_radius(value: int):
-	noise_spawn_radius = value
-
-	# Generar matriz
-	#var world_points: Array
-	#world_points.resize(width)
-	#for x in width:
-		#var world_points_y = []
-		#world_points_y.resize(height)
-		#world_points[x] = world_points_y
-		#for y in height:
-			#world_points[x][y] = 0
-	#world.world_points = world_points
+	if value >= spawn_radius:
+		noise_spawn_radius = value
+	else:
+		noise_spawn_radius = spawn_radius
 
 func set_generate_mountains(value: bool):
 	generate_mountains = value
 
 func set_generate_structures(value: bool):
 	generate_structures = value
+
+func set_world_seed(value: int):
+	world_seed = value
