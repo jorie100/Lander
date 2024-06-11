@@ -46,6 +46,7 @@ func _on_world_generated(world_data: WorldData):
 func _on_world_generated_def(world_data: WorldData):
 	world = world_data
 	print("Finished generating world")
+	print("seed: ",world.world_seed)
 	world.world_updated.connect(preview_container._on_world_updated)
 	world.world_updated.connect(main_camera._on_world_updated)
 	world.world_updated.emit(world)

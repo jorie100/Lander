@@ -8,8 +8,8 @@ fractal_octaves = 1
 
 [resource]
 script = ExtResource("1_uaevp")
-width = 128
-height = 128
+width = 512
+height = 512
 floor_height = 0
 spawn_radius = 8
 world_seed = 0

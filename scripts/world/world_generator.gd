@@ -2,6 +2,7 @@ extends Node
 
 signal world_generated(world: WorldData)
 
+@export var base_structure: StructureData ## Base structure to generate
 @export var current_structure: StructureData ## Structure being generated randomly
 @export var structures_container: Node
 @export var world_floor: Node3D
@@ -52,6 +53,9 @@ func _generate_world(world_settings: WorldSettings):
 	if world_seed == 0:
 		world_seed = randi()
 
+	new_world.add_structure(0, 0, base_structure)
+	structures_container.build_structure(Vector3(0, new_world.floor_height, 0), base_structure)
+
 	var rng = RandomNumberGenerator.new()
 	rng.seed = world_seed
 	
@@ -64,7 +68,6 @@ func _generate_world(world_settings: WorldSettings):
 	
 	new_world.world_seed = rng.seed
 	is_finished = true
-	print("seed: ",new_world.world_seed)
 	call_deferred("emit_signal", "world_generated", new_world)
 
 # Noise
