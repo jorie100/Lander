@@ -41,9 +41,14 @@ func _ready() -> void:
 
 
 func _on_world_generated(world_data: WorldData):
-	world = world_data
+	call_deferred("_on_world_generated_def", world_data)
 
+func _on_world_generated_def(world_data: WorldData):
+	world = world_data
+	print("Finished generating world")
 	world.world_updated.connect(preview_container._on_world_updated)
+	world.world_updated.connect(main_camera._on_world_updated)
+	world.world_updated.emit(world)
 
 func _on_structure_previewed(build_position: Vector3, build_structure: StructureData):
 	build_position = Vector3i(build_position)

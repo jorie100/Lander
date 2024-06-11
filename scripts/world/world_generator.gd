@@ -6,7 +6,25 @@ signal world_generated(world: WorldData)
 @export var structures_container: Node
 @export var world_floor: Node3D
 
+@export var loading_screen: Node
+var progress: float = 0.0
+var total_steps: float = 2.0
+var partial_steps: float
+var is_finished: bool = false
+
+var thread = Thread.new()
+
+func _process(_delta):
+	if not is_finished and "progress" in loading_screen:
+		loading_screen.progress = progress
+	else:
+		loading_screen.progress = 100.0
+		
+
 func _on_new_world_started(world_settings: WorldSettings):
+	thread.start(_generate_world.bind(world_settings))
+
+func _generate_world(world_settings: WorldSettings):
 	# Generar piso
 	world_floor.generate_floor(world_settings)
 
@@ -28,6 +46,8 @@ func _on_new_world_started(world_settings: WorldSettings):
 	new_world.astar_grid = astar_grid
 	
 	# Generar terreno
+	partial_steps = width * height
+
 	var world_seed = world_settings.world_seed
 	if world_seed == 0:
 		world_seed = randi()
@@ -43,8 +63,9 @@ func _on_new_world_started(world_settings: WorldSettings):
 		new_world = generate_structures(rng, new_world)
 	
 	new_world.world_seed = rng.seed
+	is_finished = true
 	print("seed: ",new_world.world_seed)
-	world_generated.emit(new_world)
+	call_deferred("emit_signal", "world_generated", new_world)
 
 # Noise
 func setup_noise(noise: FastNoiseLite, noise_rng: RandomNumberGenerator):
@@ -69,6 +90,9 @@ func generate_noise_grid(width, height, noise, n_scale):
 			var ny = (float(y) / float(height)) * (10 * n_scale) * (scale_factor * 0.002)
 			var value = noise.get_noise_2d(nx, ny)
 			row.append(value)
+
+			progress += (100.0 / total_steps) / (partial_steps)
+
 		grid.append(row)
 	return grid
 
@@ -89,6 +113,8 @@ func generate_mountains(noise_grid: Array, world: WorldData):
 				if noise_grid[x - half_width][y - half_height] > noise_value:
 					world.add_structure(int(x), int(y), current_structure)
 					structures_container.build_structure(Vector3(int(x), world.floor_height, int(y)), current_structure)
+			
+			progress += (100.0 / total_steps) / (partial_steps)
 	
 	return world
 
@@ -113,3 +139,4 @@ func generate_structures(rng: RandomNumberGenerator, world: WorldData):
 						structures_container.build_structure(Vector3(int(x), world.floor_height, int(y)), current_structure)
 	
 	return world
+

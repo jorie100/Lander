@@ -22,6 +22,7 @@ var camera_position: Vector3
 var camera_zoom: float
 var build_mode: bool = false
 var current_structure: StructureData
+var world_generated: bool = false
 
 func _ready() -> void:
 	current_structure = structures.front()
@@ -31,49 +32,50 @@ func _ready() -> void:
 		grid.visible = build_mode
 
 func _input(_event) -> void:
-	
-	if Input.is_action_just_pressed("cycle_structures") and build_mode:
-		structures = Utils.rotate_right(structures,1)
-		current_structure = structures.front()
-	
-	if Input.is_action_just_pressed("toggle_build_mode"):
-		build_mode = not build_mode
-		build_mode_toggled.emit(build_mode)
-		if grid:
-			grid.visible = build_mode
+	if world_generated:
 		
-	
-	if build_mode:
+		if Input.is_action_just_pressed("cycle_structures") and build_mode:
+			structures = Utils.rotate_right(structures,1)
+			current_structure = structures.front()
 		
-		if Input.is_action_pressed("build"):
-			var raycast_result = raycast_from_camera(1)
-			if raycast_result:
-				var mouse_3d_position = raycast_result.get("position")
-				if mouse_3d_position.x < 0:
-					mouse_3d_position.x += -1
-				if mouse_3d_position.z < 0:
-					mouse_3d_position.z += -1
-				#builded.emit(mouse_3d_position, false)
-				structure_builded.emit(mouse_3d_position, current_structure)
+		if Input.is_action_just_pressed("toggle_build_mode"):
+			build_mode = not build_mode
+			build_mode_toggled.emit(build_mode)
+			if grid:
+				grid.visible = build_mode
+			
 		
-		if Input.is_action_just_pressed("destroy"):
-			var raycast_result_collider = raycast_from_camera(4)
-			if raycast_result_collider:
-				structure_destroyed.emit(raycast_result_collider.get("collider"))
-	else:
-		if Input.is_action_just_pressed("move_player"):
-			var raycast_result = raycast_from_camera(-1)
-			if raycast_result:
-				if raycast_result.get("collider").collision_layer == 1:
+		if build_mode:
+			
+			if Input.is_action_pressed("build"):
+				var raycast_result = raycast_from_camera(1)
+				if raycast_result:
 					var mouse_3d_position = raycast_result.get("position")
 					if mouse_3d_position.x < 0:
 						mouse_3d_position.x += -1
 					if mouse_3d_position.z < 0:
 						mouse_3d_position.z += -1
-					#player_moved.emit(mouse_3d_position)
-				if raycast_result.get("collider").collision_layer == 4:
-					pass
-					#structure_clicked.emit(raycast_result.get("collider"))
+					#builded.emit(mouse_3d_position, false)
+					structure_builded.emit(mouse_3d_position, current_structure)
+			
+			if Input.is_action_just_pressed("destroy"):
+				var raycast_result_collider = raycast_from_camera(4)
+				if raycast_result_collider:
+					structure_destroyed.emit(raycast_result_collider.get("collider"))
+		else:
+			if Input.is_action_just_pressed("move_player"):
+				var raycast_result = raycast_from_camera(-1)
+				if raycast_result:
+					if raycast_result.get("collider").collision_layer == 1:
+						var mouse_3d_position = raycast_result.get("position")
+						if mouse_3d_position.x < 0:
+							mouse_3d_position.x += -1
+						if mouse_3d_position.z < 0:
+							mouse_3d_position.z += -1
+						#player_moved.emit(mouse_3d_position)
+					if raycast_result.get("collider").collision_layer == 4:
+						pass
+						#structure_clicked.emit(raycast_result.get("collider"))
 
 # Utility function to rotate around the Y-axis
 #func rotate_y(angle):
@@ -82,55 +84,57 @@ func _input(_event) -> void:
 	#self.rotation_degrees = rotation
 
 func _process(delta) -> void:
-	var raycast_result2 = raycast_from_camera(-1)
-	if raycast_result2:
-		var mouse_3d_position = raycast_result2.get("position")
-		if mouse_3d_position.x < 0:
-			mouse_3d_position.x += -1
-		if mouse_3d_position.z < 0:
-			mouse_3d_position.z += -1
-		$Label2.text = str(Vector3i(mouse_3d_position))
-		$Label.text = raycast_result2.get("collider").name
-	else:
-		$Label2.text = ""
-		$Label.text = ""
-	
-	if build_mode:
-		var raycast_result = raycast_from_camera(1)
-		if raycast_result:
-			var mouse_3d_position = raycast_result.get("position")
+	if world_generated:
+
+		var raycast_result2 = raycast_from_camera(-1)
+		if raycast_result2:
+			var mouse_3d_position = raycast_result2.get("position")
 			if mouse_3d_position.x < 0:
 				mouse_3d_position.x += -1
 			if mouse_3d_position.z < 0:
 				mouse_3d_position.z += -1
-			if raycast_result.get("collider").collision_layer == 1:
-				structure_previewed.emit(mouse_3d_position, current_structure)
-	
-	if Input.is_action_just_released("cam_zoom_down") and camera_zoom < 50:
-		camera_zoom += 100 * delta * (camera_zoom/20)
-	if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
-		camera_zoom -= 100 * delta * (camera_zoom/20)
-	size = lerpf(size, camera_zoom, 8.0 * delta)
-	
-	if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
-		movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
-		camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
-	else:
-		movement_dir = Vector2(0.0, 0.0)
-	global_position.x = lerpf(global_position.x, camera_position.x, 12.0 * delta)
-	global_position.z = lerpf(global_position.z, camera_position.z, 12.0 * delta)
-	
-	if grid and build_mode:
-		var grid_raycast = raycast_from_camera(1)
-		if grid_raycast:
-			grid.get_surface_override_material(0).set_shader_parameter("line_width", (camera_zoom * 0.0018) + 0.001)
-			var grid_fixed_position = grid_raycast.get("position")
-			if grid_fixed_position.x < 0:
-				grid_fixed_position.x += -1
-			if grid_fixed_position.z < 0:
-				grid_fixed_position.z += -1
-			grid.global_position = Vector3(Vector3i(grid_fixed_position)) + Vector3(0.5,0.01,0.5)
-			grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
+			$Label2.text = str(Vector3i(mouse_3d_position))
+			$Label.text = raycast_result2.get("collider").name
+		else:
+			$Label2.text = ""
+			$Label.text = ""
+		
+		if build_mode:
+			var raycast_result = raycast_from_camera(1)
+			if raycast_result:
+				var mouse_3d_position = raycast_result.get("position")
+				if mouse_3d_position.x < 0:
+					mouse_3d_position.x += -1
+				if mouse_3d_position.z < 0:
+					mouse_3d_position.z += -1
+				if raycast_result.get("collider").collision_layer == 1:
+					structure_previewed.emit(mouse_3d_position, current_structure)
+		
+		if Input.is_action_just_released("cam_zoom_down") and camera_zoom < 50:
+			camera_zoom += 100 * delta * (camera_zoom/20)
+		if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
+			camera_zoom -= 100 * delta * (camera_zoom/20)
+		size = lerpf(size, camera_zoom, 8.0 * delta)
+		
+		if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
+			movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
+			camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
+		else:
+			movement_dir = Vector2(0.0, 0.0)
+		global_position.x = lerpf(global_position.x, camera_position.x, 12.0 * delta)
+		global_position.z = lerpf(global_position.z, camera_position.z, 12.0 * delta)
+		
+		if grid and build_mode:
+			var grid_raycast = raycast_from_camera(1)
+			if grid_raycast:
+				grid.get_surface_override_material(0).set_shader_parameter("line_width", (camera_zoom * 0.0018) + 0.001)
+				var grid_fixed_position = grid_raycast.get("position")
+				if grid_fixed_position.x < 0:
+					grid_fixed_position.x += -1
+				if grid_fixed_position.z < 0:
+					grid_fixed_position.z += -1
+				grid.global_position = Vector3(Vector3i(grid_fixed_position)) + Vector3(0.5,0.01,0.5)
+				grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
 
 # Raycast desde la camara distancia 100. Acepta capa collision mask
 # Si capa collider_mask = -1, activa todas las capas
@@ -153,3 +157,6 @@ func _on_buildable_check(is_buildable):
 		grid.get_surface_override_material(0).set_shader_parameter("line_color", Color8(0,255,0,255))
 	else:
 		grid.get_surface_override_material(0).set_shader_parameter("line_color", Color8(255,0,0,255))
+
+func _on_world_updated(_world: WorldData) -> void:
+	world_generated = true

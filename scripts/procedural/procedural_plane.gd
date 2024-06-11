@@ -83,6 +83,9 @@ func _process(_delta):
 
 # Funcion para cambiar el tamaño del piso, borrar colisiones previas y generar mesh y colisiones de nuevo
 func update_size(updated_width, updated_height):
+	call_deferred("_update_size",updated_width,updated_height)
+
+func _update_size(updated_width, updated_height):
 	width = updated_width
 	height = updated_height
 	for child in get_children():
@@ -93,5 +96,8 @@ func update_size(updated_width, updated_height):
 	# self.set_surface_override_material(0, new_material)
 
 func generate_floor(world_settings: WorldSettings):
+	call_deferred("_generate_floor",world_settings)
+
+func _generate_floor(world_settings: WorldSettings):
 	update_size(world_settings.width,world_settings.height)
 	self.global_position.y = world_settings.floor_height
