@@ -1,14 +1,15 @@
 extends Node
 
-signal new_world_generated(world: WorldData)
+signal world_generated(world: WorldData)
 
-@export var current_structure: StructureData
+@export var current_structure: StructureData ## Structure being generated randomly
 @export var structures_container: Node
-
-func _ready():
-	self.get_parent().new_world_started.connect(_on_new_world_started)
+@export var world_floor: Node3D
 
 func _on_new_world_started(world_settings: WorldSettings):
+	# Generar piso
+	world_floor.generate_floor(world_settings)
+
 	# Para que el punto (0,0) sea el centro del mundo
 	var width = world_settings.width
 	var height = world_settings.height
@@ -43,7 +44,7 @@ func _on_new_world_started(world_settings: WorldSettings):
 	
 	new_world.world_seed = rng.seed
 	print("seed: ",new_world.world_seed)
-	new_world_generated.emit(new_world)
+	world_generated.emit(new_world)
 
 # Noise
 func setup_noise(noise: FastNoiseLite, noise_rng: RandomNumberGenerator):
@@ -86,8 +87,8 @@ func generate_mountains(noise_grid: Array, world: WorldData):
 			var distance_squared = x * x + y * y
 			if distance_squared > spawn_radius_squared:
 				if noise_grid[x - half_width][y - half_height] > noise_value:
-					world.add_structure_at(int(x), int(y), current_structure)
-					build_structure(int(x), world.floor_height, int(y), current_structure)
+					world.add_structure(int(x), int(y), current_structure)
+					structures_container.build_structure(Vector3(int(x), world.floor_height, int(y)), current_structure)
 	
 	return world
 
@@ -108,14 +109,7 @@ func generate_structures(rng: RandomNumberGenerator, world: WorldData):
 							is_generatable = false
 							break  # Stop checking if we find a solid point
 					if is_generatable:
-						world.add_structure_at(int(x), int(y), current_structure)
-						build_structure(int(x), world.floor_height, int(y), current_structure)
+						world.add_structure(int(x), int(y), current_structure)
+						structures_container.build_structure(Vector3(int(x), world.floor_height, int(y)), current_structure)
 	
 	return world
-
-# Build in structure container
-func build_structure(x: int, z: float, y: int, structure: StructureData) -> void:
-	#var new_structure: StructureData = structure.duplicate()
-	var new_structure_scene = structure.structure_scene.instantiate()
-	structures_container.add_child(new_structure_scene)
-	new_structure_scene.global_position = Vector3(x, z + 0.5, y)

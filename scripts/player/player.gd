@@ -132,9 +132,9 @@ func calculate_path_to_target(target_path_position: Vector3) -> void:
 func _on_world_generator_world_generated(world: WorldData):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
-	world.world_changed.connect(_on_world_changed)
+	world.world_updated.connect(_on_world_updated)
 
-func _on_world_changed(world: WorldData):
+func _on_world_updated(world: WorldData):
 	astar_grid = world.astar_grid
 	floor_height = world.floor_height
 	

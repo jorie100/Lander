@@ -1,10 +1,7 @@
 extends Node3D
 
 signal new_world_started(world_settings: WorldSettings)
-
-signal world_generated(world: WorldData)
-signal built_checked(is_buildable: bool)
-signal structure_clicked(structure: StructureData)
+signal buildable_check(is_buildable: bool)
 
 # Settings del mundo
 @export_category("WorldSettings")
@@ -21,27 +18,39 @@ signal structure_clicked(structure: StructureData)
 var world: WorldData
 
 func _ready() -> void:
-	world_generator.world_generated.connect(_on_world_generated)
-	new_world_started.emit(world_settings)
-
 	if "build_structure" in structures_container:
+
+		# World generation
+		world_generator.world_generated.connect(_on_world_generated)
+		self.new_world_started.connect(world_generator._on_new_world_started)
+		new_world_started.emit(world_settings)
+
+		# Camera connections
 		main_camera.structure_previewed.connect(_on_structure_previewed)
 		main_camera.structure_builded.connect(_on_structure_builded)
 		main_camera.structure_destroyed.connect(_on_structure_destroyed)
-		main_camera.structure_selected.connect(_on_structure_selected)
+		# main_camera.structure_selected.connect(_on_structure_selected)
+
+		# Preview container connections
+		main_camera.structure_previewed.connect(preview_container._on_structure_previewed)
+		main_camera.build_mode_toggled.connect(preview_container._on_build_mode_toggled)
+
+		# Buildable checks
+		self.buildable_check.connect(main_camera._on_buildable_check)
+		self.buildable_check.connect(preview_container._on_buildable_check)
+
 
 func _on_world_generated(world_data: WorldData):
 	world = world_data
-	world_generated.emit(world)
 
-func _on_main_camera_structure_clicked(collided_structure: CollisionObject3D):
-	structure_clicked.emit(world.structures[collided_structure.get_index()])
+	world.world_updated.connect(preview_container._on_world_updated)
 
 func _on_structure_previewed(build_position: Vector3, build_structure: StructureData):
-	pass
+	build_position = Vector3i(build_position)
+	buildable_check.emit(!world.is_world_structure_solid(int(build_position.x), int(build_position.z), build_structure))
 
-func _on_structure_selected(collided_structure: CollisionObject3D):
-	pass
+# func _on_structure_selected(collided_structure: CollisionObject3D):
+# 	pass
 
 func _on_structure_builded(build_position: Vector3, build_structure: StructureData):
 	build_position = Vector3i(build_position)

@@ -92,6 +92,6 @@ func update_size(updated_width, updated_height):
 	# new_material.albedo_color = Color8(randi_range(0,180),randi_range(0,50),randi_range(0,180),1)
 	# self.set_surface_override_material(0, new_material)
 
-func _on_world_generator_world_generated(world: WorldData):
-	update_size(world.width,world.height)
-	self.global_position.y = world.floor_height
+func generate_floor(world_settings: WorldSettings):
+	update_size(world_settings.width,world_settings.height)
+	self.global_position.y = world_settings.floor_height

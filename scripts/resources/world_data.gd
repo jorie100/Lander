@@ -1,7 +1,7 @@
 extends WorldSettings
 class_name WorldData
 
-signal world_changed(world: WorldData)
+signal world_updated(world: WorldData)
 
 @export var structures: Array[StructureData] = []
 
@@ -21,19 +21,12 @@ func _init(world_settings: WorldSettings):
 	set_generate_structures(world_settings.generate_structures)
 	set_world_seed(world_settings.world_seed)
 
-# Additional functions to handle interactions with structures
-# func get_structure_at_position(position: Vector2) -> StructureData:
-# 	for structure in structures:
-# 		if structure.is_point_in_shape(position):
-# 			return structure
-# 	return null
-
 func is_world_point_solid(x: int, y: int) -> bool:
 	return astar_grid.is_point_solid(Vector2i(x, y))
 
 func set_world_point(x: int, y: int, solid: bool) -> void:
 	astar_grid.set_point_solid(Vector2i(x,y),solid)
-	world_changed.emit(self)
+	world_updated.emit(self)
 
 func is_world_structure_solid(x: int, y: int, structure: StructureData) -> bool:
 	for point in structure.structure_shape:
@@ -49,19 +42,13 @@ func add_structure(x: int, y: int, structure: StructureData):
 		set_world_point(new_structure.structure_shape[index].x, new_structure.structure_shape[index].y, true)
 	structures.append(new_structure)
 
-# func add_structure(structure: StructureData):
-# 	structures.append(structure)
-# 	for index in structure.structure_shape.size():
-# 		set_world_point(structure.structure_shape[index].x, structure.structure_shape[index].y, true)
-# 	world_changed.emit(self)
-
 func remove_structure(index: int):
 	for point in structures[index].structure_shape:
 		set_world_point(point.x, point.y, false)
 	structures.remove_at(index)
-	world_changed.emit(self)
+	world_updated.emit(self)
 
 # Setters and getters
 func set_astar_grid(value):
 	astar_grid = value
-	world_changed.emit()
+	world_updated.emit()

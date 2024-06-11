@@ -4,11 +4,7 @@ signal structure_previewed(build_position: Vector3, build_structure: StructureDa
 signal structure_builded(build_position: Vector3, build_structure: StructureData)
 signal structure_destroyed(collided_structure: CollisionObject3D)
 signal structure_selected(collided_structure: CollisionObject3D)
-
-#signal player_moved(target_position: Vector3)
-#signal structure_clicked(collided_structure: CollisionObject3D)
-signal build_mode_toggled(is_building: bool, structure: StructureData)
-signal structure_changed(structure: StructureData)
+signal build_mode_toggled(is_building: bool)
 
 # Speed of the camera movement
 @export_category("MainCamera")
@@ -39,11 +35,10 @@ func _input(_event) -> void:
 	if Input.is_action_just_pressed("cycle_structures") and build_mode:
 		structures = Utils.rotate_right(structures,1)
 		current_structure = structures.front()
-		structure_changed.emit(current_structure)
 	
 	if Input.is_action_just_pressed("toggle_build_mode"):
 		build_mode = not build_mode
-		build_mode_toggled.emit(build_mode, current_structure)
+		build_mode_toggled.emit(build_mode)
 		if grid:
 			grid.visible = build_mode
 		
@@ -109,8 +104,7 @@ func _process(delta) -> void:
 			if mouse_3d_position.z < 0:
 				mouse_3d_position.z += -1
 			if raycast_result.get("collider").collision_layer == 1:
-				pass
-				#builded.emit(mouse_3d_position, true)
+				structure_previewed.emit(mouse_3d_position, current_structure)
 	
 	if Input.is_action_just_released("cam_zoom_down") and camera_zoom < 50:
 		camera_zoom += 100 * delta * (camera_zoom/20)
@@ -154,7 +148,7 @@ func raycast_from_camera(collider_mask) -> Dictionary:
 	var result = space.intersect_ray(ray_query)
 	return result
 
-func _on_world_generator_built_checked(is_buildable):
+func _on_buildable_check(is_buildable):
 	if is_buildable:
 		grid.get_surface_override_material(0).set_shader_parameter("line_color", Color8(0,255,0,255))
 	else:
