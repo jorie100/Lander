@@ -14,12 +14,10 @@ colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_80x0f"]
 gradient = SubResource("Gradient_xbeh6")
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("target", "mesh")]
+[node name="Player" type="CharacterBody3D"]
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_7f4md")
-target = NodePath("Target")
-mesh = NodePath("MeshInstance3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00814819, 0.5, 6.10352e-05)
