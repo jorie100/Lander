@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://dsfwb1tquup73"]
+[gd_scene load_steps=17 format=3 uid="uid://dsfwb1tquup73"]
 
 [ext_resource type="PackedScene" uid="uid://cnijw8yrtcfhf" path="res://scenes/procedural/ProceduralPlane.tscn" id="1_16ih5"]
 [ext_resource type="PackedScene" uid="uid://dsfky4jfe0wdy" path="res://scenes/world/WorldGenerator.tscn" id="1_858cd"]
 [ext_resource type="Resource" uid="uid://ddudlf3cmo7wh" path="res://scripts/world/world_settings/default.tres" id="2_4qcrx"]
 [ext_resource type="Resource" uid="uid://bhcgswwbqnfss" path="res://scripts/world/structures/cube.tres" id="3_srluh"]
+[ext_resource type="Resource" uid="uid://dfpcj34od57vc" path="res://scripts/world/structures/default.tres" id="4_2glsl"]
 [ext_resource type="Script" path="res://scripts/world/world_generator.gd" id="4_f2ikr"]
 [ext_resource type="PackedScene" uid="uid://xq7h4o4vqbxv" path="res://scenes/player/MainCamera.tscn" id="4_gwgv0"]
 [ext_resource type="Material" uid="uid://bwvwtr6vftt3u" path="res://assets/materials/prototype_materials/dark_floor.tres" id="4_ip3fi"]
@@ -13,7 +14,7 @@
 [ext_resource type="Material" uid="uid://bopvtyrfl120p" path="res://assets/materials/structures/preview_not_buildable.tres" id="6_bchxv"]
 [ext_resource type="Script" path="res://scripts/world/structures_container.gd" id="8_g41cv"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_mirug"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_bm584"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63),
@@ -27,7 +28,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191)
 }]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_6iyxj"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_20t3e"]
 data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
 
 [sub_resource type="Environment" id="Environment_r7bvf"]
@@ -46,6 +47,7 @@ main_camera = NodePath("../MainCamera")
 
 [node name="WorldGenerator" type="Node" parent="World" node_paths=PackedStringArray("structures_container", "world_floor", "loading_screen")]
 script = ExtResource("4_f2ikr")
+base_structure = ExtResource("4_2glsl")
 current_structure = ExtResource("3_srluh")
 structures_container = NodePath("../StructuresContainer")
 world_floor = NodePath("../Floor")
@@ -54,14 +56,14 @@ loading_screen = NodePath("LoadingScreen")
 [node name="LoadingScreen" parent="World/WorldGenerator" instance=ExtResource("5_1b8vi")]
 
 [node name="Floor" parent="World" instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_mirug")
+mesh = SubResource("ArrayMesh_bm584")
 skeleton = NodePath("../..")
 material = ExtResource("4_ip3fi")
 
 [node name="Floor_col" type="StaticBody3D" parent="World/Floor"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Floor/Floor_col"]
-shape = SubResource("ConcavePolygonShape3D_6iyxj")
+shape = SubResource("ConcavePolygonShape3D_20t3e")
 
 [node name="PreviewContainer" type="Node3D" parent="World"]
 script = ExtResource("4_pfnmy")
