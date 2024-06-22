@@ -25,18 +25,21 @@ func _ready() -> void:
 		self.new_world_started.connect(world_generator._on_new_world_started)
 		new_world_started.emit(world_settings)
 
-		# Camera connections
-		main_camera.structure_previewed.connect(_on_structure_previewed)
-		main_camera.structure_builded.connect(_on_structure_builded)
-		main_camera.structure_destroyed.connect(_on_structure_destroyed)
-		# main_camera.structure_selected.connect(_on_structure_selected)
+		if main_camera:
 
-		# Preview container connections
-		main_camera.structure_previewed.connect(preview_container._on_structure_previewed)
-		main_camera.build_mode_toggled.connect(preview_container._on_build_mode_toggled)
+			# Camera connections
+			main_camera.structure_previewed.connect(_on_structure_previewed)
+			main_camera.structure_builded.connect(_on_structure_builded)
+			main_camera.structure_destroyed.connect(_on_structure_destroyed)
+			# main_camera.structure_selected.connect(_on_structure_selected)
 
-		# Buildable checks
-		self.buildable_check.connect(main_camera._on_buildable_check)
+			# Preview container connections
+			main_camera.structure_previewed.connect(preview_container._on_structure_previewed)
+			main_camera.build_mode_toggled.connect(preview_container._on_build_mode_toggled)
+
+			# Buildable checks
+			self.buildable_check.connect(main_camera._on_buildable_check)
+
 		self.buildable_check.connect(preview_container._on_buildable_check)
 
 
@@ -48,7 +51,8 @@ func _on_world_generated_def(world_data: WorldData):
 	print("Finished generating world")
 	print("seed: ",world.world_seed)
 	world.world_updated.connect(preview_container._on_world_updated)
-	world.world_updated.connect(main_camera._on_world_updated)
+	if main_camera:
+		world.world_updated.connect(main_camera._on_world_updated)
 	world.world_updated.emit(world)
 
 func _on_structure_previewed(build_position: Vector3, build_structure: StructureData):

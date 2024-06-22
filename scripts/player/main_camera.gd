@@ -7,9 +7,12 @@ signal structure_selected(collided_structure: CollisionObject3D)
 signal build_mode_toggled(is_building: bool)
 
 # Speed of the camera movement
-@export_category("MainCamera")
+@export_category("MainCameraSettings")
 @export var speed = 15.0
+# Sensitivity of the mouse movement
+@export_range(0.0,0.2) var mouse_sensitivity = 0.1
 
+@export_category("MainCameraNodes")
 # Nodes
 @export var grid: MeshInstance3D
 
@@ -24,14 +27,23 @@ var build_mode: bool = false
 var current_structure: StructureData
 var world_generated: bool = false
 
+var pivot_point = Vector3(0, 0, 0)  # Replace with your pivot point
+var rotation_speed = 1.0  # Speed of rotation
+
 func _ready() -> void:
 	current_structure = structures.front()
 	camera_position = self.global_position
 	camera_zoom = self.size
+	grid.top_level = true
 	if grid:
 		grid.visible = build_mode
 
-func _input(_event) -> void:
+func _input(event) -> void:
+	
+	if Input.is_action_pressed("rotate_camera") and event is InputEventMouseMotion:
+		var resolution_ratio = 1152 / get_viewport().get_visible_rect().size.x
+		rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity * resolution_ratio))
+
 	if world_generated:
 		
 		if Input.is_action_just_pressed("cycle_structures") and build_mode:
@@ -77,12 +89,6 @@ func _input(_event) -> void:
 						pass
 						#structure_clicked.emit(raycast_result.get("collider"))
 
-# Utility function to rotate around the Y-axis
-#func rotate_y(angle):
-	#var rotation = self.rotation_degrees
-	#rotation.y += angle
-	#self.rotation_degrees = rotation
-
 func _process(delta) -> void:
 	if world_generated:
 
@@ -115,10 +121,13 @@ func _process(delta) -> void:
 		if Input.is_action_just_released("cam_zoom_up") and camera_zoom > 2:
 			camera_zoom -= 100 * delta * (camera_zoom/20)
 		size = lerpf(size, camera_zoom, 8.0 * delta)
-		
+
 		if Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down") != Vector2(0,0):
 			movement_dir = Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
-			camera_position += (Vector3(movement_dir.x, 0.0, movement_dir.y)).normalized() * delta * speed
+			var movement_vector = Vector3(movement_dir.x, 0.0, movement_dir.y).normalized()
+			var y_rotation = self.rotation.y
+			var rotated_vector = movement_vector.rotated(Vector3.UP, y_rotation)
+			camera_position += rotated_vector * delta * speed
 		else:
 			movement_dir = Vector2(0.0, 0.0)
 		global_position.x = lerpf(global_position.x, camera_position.x, 12.0 * delta)
@@ -134,6 +143,7 @@ func _process(delta) -> void:
 				if grid_fixed_position.z < 0:
 					grid_fixed_position.z += -1
 				grid.global_position = Vector3(Vector3i(grid_fixed_position)) + Vector3(0.5,0.01,0.5)
+				grid.global_rotation_degrees.x = -90
 				grid.get_surface_override_material(0).set_shader_parameter("center", -grid.global_position)
 
 # Raycast desde la camara distancia 100. Acepta capa collision mask

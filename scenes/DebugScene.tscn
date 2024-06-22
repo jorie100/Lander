@@ -6,15 +6,15 @@
 [ext_resource type="Resource" uid="uid://bhcgswwbqnfss" path="res://scripts/world/structures/cube.tres" id="3_srluh"]
 [ext_resource type="Resource" uid="uid://dfpcj34od57vc" path="res://scripts/world/structures/default.tres" id="4_2glsl"]
 [ext_resource type="Script" path="res://scripts/world/world_generator.gd" id="4_f2ikr"]
-[ext_resource type="PackedScene" uid="uid://xq7h4o4vqbxv" path="res://scenes/player/MainCamera.tscn" id="4_gwgv0"]
 [ext_resource type="Material" uid="uid://bwvwtr6vftt3u" path="res://assets/materials/prototype_materials/dark_floor.tres" id="4_ip3fi"]
 [ext_resource type="Script" path="res://scripts/world/preview_container.gd" id="4_pfnmy"]
 [ext_resource type="PackedScene" uid="uid://woofhuq5383m" path="res://scenes/ui/LoadingScreen.tscn" id="5_1b8vi"]
 [ext_resource type="Material" uid="uid://cqlp7kufgqtba" path="res://assets/materials/structures/preview_buildable.tres" id="5_xxv2k"]
 [ext_resource type="Material" uid="uid://bopvtyrfl120p" path="res://assets/materials/structures/preview_not_buildable.tres" id="6_bchxv"]
 [ext_resource type="Script" path="res://scripts/world/structures_container.gd" id="8_g41cv"]
+[ext_resource type="PackedScene" uid="uid://xq7h4o4vqbxv" path="res://scenes/player/MainCamera.tscn" id="13_n7ma1"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_bm584"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_mpqml"]
 _surfaces = [{
 "aabb": AABB(-8, 0, -8, 16, 1e-05, 16),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63),
@@ -28,7 +28,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 193, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 65, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191, 255, 127, 255, 255, 0, 0, 255, 191)
 }]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_20t3e"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_igefu"]
 data = PackedVector3Array(-8, 0, -8, 8, 0, -8, 8, 0, 8, -8, 0, -8, 8, 0, 8, -8, 0, 8)
 
 [sub_resource type="Environment" id="Environment_r7bvf"]
@@ -43,7 +43,7 @@ world_settings = ExtResource("2_4qcrx")
 preview_container = NodePath("PreviewContainer")
 structures_container = NodePath("StructuresContainer")
 world_generator = NodePath("WorldGenerator")
-main_camera = NodePath("../MainCamera")
+main_camera = NodePath("../Camera3D")
 
 [node name="WorldGenerator" type="Node" parent="World" node_paths=PackedStringArray("structures_container", "world_floor", "loading_screen")]
 script = ExtResource("4_f2ikr")
@@ -56,14 +56,14 @@ loading_screen = NodePath("LoadingScreen")
 [node name="LoadingScreen" parent="World/WorldGenerator" instance=ExtResource("5_1b8vi")]
 
 [node name="Floor" parent="World" instance=ExtResource("1_16ih5")]
-mesh = SubResource("ArrayMesh_bm584")
+mesh = SubResource("ArrayMesh_mpqml")
 skeleton = NodePath("../..")
 material = ExtResource("4_ip3fi")
 
 [node name="Floor_col" type="StaticBody3D" parent="World/Floor"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="World/Floor/Floor_col"]
-shape = SubResource("ConcavePolygonShape3D_20t3e")
+shape = SubResource("ConcavePolygonShape3D_igefu")
 
 [node name="PreviewContainer" type="Node3D" parent="World"]
 script = ExtResource("4_pfnmy")
@@ -73,10 +73,9 @@ not_buildable_material = ExtResource("6_bchxv")
 [node name="StructuresContainer" type="Node" parent="World"]
 script = ExtResource("8_g41cv")
 
-[node name="MainCamera" parent="." instance=ExtResource("4_gwgv0")]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 90, 52.0788)
-current = true
-far = 120.0
+[node name="Camera3D" parent="." instance=ExtResource("13_n7ma1")]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 15, 0)
+far = 35.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.221592, 0.138579, 0.965242, -0.348161, -0.913366, 0.211059, 0.910868, -0.382829, -0.154147, 0, 6.22908, 0)
@@ -89,5 +88,3 @@ directional_shadow_fade_start = 1.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_r7bvf")
-
-[connection signal="build_mode_toggled" from="MainCamera" to="World/PreviewContainer" method="_on_main_camera_build_mode_toggled"]

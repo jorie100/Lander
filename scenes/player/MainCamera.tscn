@@ -23,7 +23,7 @@ shader_parameter/center = Vector3(0, 0, 0)
 shader_parameter/emission_intensity = 15.065
 
 [node name="Camera3D" type="Camera3D" node_paths=PackedStringArray("grid")]
-transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 0, 0)
 cull_mask = 1
 projection = 1
 size = 15.0
@@ -32,7 +32,7 @@ grid = NodePath("Grid")
 structures = Array[Resource("res://scripts/resources/structure_data.gd")]([ExtResource("2_cmyrm"), ExtResource("3_r3im5"), ExtResource("4_2rcqe"), ExtResource("5_jnr7h")])
 
 [node name="Grid" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.866024, 0.5, 0, -0.5, 0.866024, 0, 0.00540702, 0.00936523)
+transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0)
 top_level = true
 visible = false
 mesh = SubResource("QuadMesh_cnw12")
@@ -46,3 +46,5 @@ offset_bottom = 46.0
 [node name="Label2" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="CameraPivot" type="Node3D" parent="."]

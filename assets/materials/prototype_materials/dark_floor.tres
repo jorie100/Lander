@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bqoaf3dt20r78" path="res://assets/materials/prototype_materials/textures/dark/texture_01.png" id="1_x4q63"]
 
 [resource]
+specular_mode = 2
 albedo_texture = ExtResource("1_x4q63")
 metallic_specular = 0.21
 roughness = 0.36

@@ -7,6 +7,8 @@ signal world_updated(world: WorldData)
 
 var astar_grid: AStarGrid2D: set = set_astar_grid
 
+var world_points: Array[Array] = []
+
 func _init(world_settings: WorldSettings):
 	set_width(world_settings.width)
 	set_height(world_settings.height)
